@@ -1,0 +1,181 @@
+<html>
+<head>
+<title>AppTestAI.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+AppTestAI.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">flet </span><span class="s0">as </span><span class="s1">ft</span>
+<span class="s0">import </span><span class="s1">google</span><span class="s2">.</span><span class="s1">generativeai </span><span class="s0">as </span><span class="s1">genai</span>
+
+<span class="s1">ai_responses </span><span class="s2">= []  </span><span class="s3"># memorie doar pentru răspunsurile AI-ului</span>
+
+<span class="s3"># Configurare Gemini</span>
+<span class="s1">genai</span><span class="s2">.</span><span class="s1">configure</span><span class="s2">(</span><span class="s1">api_key</span><span class="s2">=</span><span class="s4">&quot;AIzaSyBOJFkhhQrQG8x6s6AIzqTDa8uncVEwNmU&quot;</span><span class="s2">)</span>
+<span class="s1">model </span><span class="s2">= </span><span class="s1">genai</span><span class="s2">.</span><span class="s1">GenerativeModel</span><span class="s2">(</span><span class="s1">model_name</span><span class="s2">=</span><span class="s4">&quot;gemini-1.5-flash&quot;</span><span class="s2">)</span>
+
+<span class="s3">#aici avem functie care face ca raspunsurile de la ai de tipul **cuvant** sa fie ingrosate</span>
+<span class="s0">def </span><span class="s1">parse_bold</span><span class="s2">(</span><span class="s1">text</span><span class="s2">):</span>
+    <span class="s1">parts </span><span class="s2">= []</span>
+    <span class="s1">split </span><span class="s2">= </span><span class="s1">text</span><span class="s2">.</span><span class="s1">split</span><span class="s2">(</span><span class="s4">&quot;**&quot;</span><span class="s2">)</span>
+    <span class="s0">for </span><span class="s1">i</span><span class="s2">, </span><span class="s1">part </span><span class="s0">in </span><span class="s1">enumerate</span><span class="s2">(</span><span class="s1">split</span><span class="s2">):</span>
+        <span class="s0">if </span><span class="s1">i </span><span class="s2">% </span><span class="s5">2 </span><span class="s2">== </span><span class="s5">0</span><span class="s2">:</span>
+            <span class="s1">parts</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">TextSpan</span><span class="s2">(</span><span class="s1">part</span><span class="s2">))</span>
+        <span class="s0">else</span><span class="s2">:</span>
+            <span class="s1">parts</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">TextSpan</span><span class="s2">(</span><span class="s1">part</span><span class="s2">, </span><span class="s1">style</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">TextStyle</span><span class="s2">(</span><span class="s1">weight</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">FontWeight</span><span class="s2">.</span><span class="s1">BOLD</span><span class="s2">)))</span>
+    <span class="s0">return </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Text</span><span class="s2">(</span><span class="s1">spans</span><span class="s2">=</span><span class="s1">parts</span><span class="s2">, </span><span class="s1">selectable</span><span class="s2">=</span><span class="s0">True</span><span class="s2">, </span><span class="s1">color</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">BLACK</span><span class="s2">)</span>
+
+<span class="s3">#definire functie pentru a obtine raspunsuri de la ai</span>
+<span class="s0">async def </span><span class="s1">get_ai_response</span><span class="s2">(</span><span class="s1">prompt</span><span class="s2">):</span>
+    <span class="s0">try</span><span class="s2">:</span>
+        <span class="s1">response </span><span class="s2">= </span><span class="s1">model</span><span class="s2">.</span><span class="s1">generate_content</span><span class="s2">(</span><span class="s1">prompt</span><span class="s2">)</span>
+        <span class="s0">return </span><span class="s1">response</span><span class="s2">.</span><span class="s1">text</span><span class="s2">.</span><span class="s1">strip</span><span class="s2">()</span>
+    <span class="s0">except </span><span class="s1">Exception </span><span class="s0">as </span><span class="s1">e</span><span class="s2">:</span>
+        <span class="s0">return </span><span class="s4">&quot;Nu am putut obține un răspuns de la AI.&quot;</span>
+
+<span class="s3">#prima pagina din meniu</span>
+<span class="s0">def </span><span class="s1">chat_ai_view</span><span class="s2">(</span><span class="s1">page</span><span class="s2">: </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Page</span><span class="s2">):</span>
+    <span class="s1">chat_column </span><span class="s2">= </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Column</span><span class="s2">(</span><span class="s1">scroll</span><span class="s2">=</span><span class="s4">&quot;auto&quot;</span><span class="s2">, </span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">)</span>
+    <span class="s1">input_field </span><span class="s2">= </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">TextField</span><span class="s2">(</span><span class="s1">label</span><span class="s2">=</span><span class="s4">&quot;Scrie întrebarea ta...&quot;</span><span class="s2">, </span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">)</span>
+    <span class="s0">async def </span><span class="s1">on_send</span><span class="s2">(</span><span class="s1">e</span><span class="s2">=</span><span class="s0">None</span><span class="s2">):</span>
+        <span class="s1">question </span><span class="s2">= </span><span class="s1">input_field</span><span class="s2">.</span><span class="s1">value</span><span class="s2">.</span><span class="s1">strip</span><span class="s2">()</span>
+        <span class="s0">if not </span><span class="s1">question</span><span class="s2">:</span>
+            <span class="s0">return</span>
+
+        <span class="s3">#configurare a chenarului in care sunt scrise intrebarile</span>
+        <span class="s1">chat_column</span><span class="s2">.</span><span class="s1">controls</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">Container</span><span class="s2">(</span>
+                <span class="s1">content</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Text</span><span class="s2">(</span><span class="s4">f&quot;</span><span class="s0">{</span><span class="s1">question</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s2">, </span><span class="s1">color</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">BLACK</span><span class="s2">, </span><span class="s1">selectable</span><span class="s2">=</span><span class="s0">True</span><span class="s2">),</span>
+                <span class="s1">bgcolor</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">LIGHT_BLUE_100</span><span class="s2">,</span>
+                <span class="s1">border</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">border</span><span class="s2">.</span><span class="s1">all</span><span class="s2">(</span><span class="s5">1</span><span class="s2">, </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">BLUE_300</span><span class="s2">),</span>
+                <span class="s1">border_radius</span><span class="s2">=</span><span class="s5">10</span><span class="s2">,</span>
+                <span class="s1">padding</span><span class="s2">=</span><span class="s5">10</span><span class="s2">,</span>
+                <span class="s1">margin</span><span class="s2">=</span><span class="s5">5</span><span class="s2">,</span>
+                <span class="s1">alignment</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">alignment</span><span class="s2">.</span><span class="s1">center_left</span>
+            <span class="s2">)</span>
+        <span class="s2">)</span>
+
+        <span class="s1">input_field</span><span class="s2">.</span><span class="s1">value </span><span class="s2">= </span><span class="s4">&quot;&quot;</span>
+        <span class="s1">input_field</span><span class="s2">.</span><span class="s1">disabled </span><span class="s2">= </span><span class="s0">True</span>
+        <span class="s1">page</span><span class="s2">.</span><span class="s1">update</span><span class="s2">()</span>
+
+        <span class="s1">answer </span><span class="s2">= </span><span class="s0">await </span><span class="s1">get_ai_response</span><span class="s2">(</span><span class="s1">question</span><span class="s2">)</span>
+        <span class="s1">ai_responses</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s1">answer</span><span class="s2">)</span>
+
+        <span class="s3">#chenarul in care apar intrebarile dupa send</span>
+        <span class="s1">chat_column</span><span class="s2">.</span><span class="s1">controls</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">Container</span><span class="s2">(</span>
+                <span class="s1">content</span><span class="s2">=</span><span class="s1">parse_bold</span><span class="s2">(</span><span class="s4">f&quot;</span><span class="s0">{</span><span class="s1">answer</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s2">),</span>
+                <span class="s1">bgcolor</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">PURPLE_100</span><span class="s2">,</span>
+                <span class="s1">border</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">border</span><span class="s2">.</span><span class="s1">all</span><span class="s2">(</span><span class="s5">1</span><span class="s2">, </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">PURPLE_300</span><span class="s2">),</span>
+                <span class="s1">border_radius</span><span class="s2">=</span><span class="s5">10</span><span class="s2">,</span>
+                <span class="s1">padding</span><span class="s2">=</span><span class="s5">10</span><span class="s2">,</span>
+                <span class="s1">margin</span><span class="s2">=</span><span class="s5">5</span><span class="s2">,</span>
+                <span class="s1">alignment</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">alignment</span><span class="s2">.</span><span class="s1">center_left</span>
+            <span class="s2">)</span>
+        <span class="s2">)</span>
+
+        <span class="s1">input_field</span><span class="s2">.</span><span class="s1">disabled </span><span class="s2">= </span><span class="s0">False</span>
+        <span class="s1">input_field</span><span class="s2">.</span><span class="s1">focus</span><span class="s2">()</span>
+        <span class="s1">page</span><span class="s2">.</span><span class="s1">update</span><span class="s2">()</span>
+
+    <span class="s1">input_field</span><span class="s2">.</span><span class="s1">on_submit </span><span class="s2">= </span><span class="s1">on_send  </span><span class="s3"># Apelează on_send la Enter</span>
+
+    <span class="s0">return </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Column</span><span class="s2">([</span>
+        <span class="s1">ft</span><span class="s2">.</span><span class="s1">Text</span><span class="s2">(</span><span class="s4">&quot;💬 Chat AI Educațional&quot;</span><span class="s2">, </span><span class="s1">style</span><span class="s2">=</span><span class="s4">&quot;headlineMedium&quot;</span><span class="s2">),</span>
+        <span class="s1">ft</span><span class="s2">.</span><span class="s1">Container</span><span class="s2">(</span><span class="s1">chat_column</span><span class="s2">, </span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">, </span><span class="s1">padding</span><span class="s2">=</span><span class="s5">10</span><span class="s2">),</span>
+        <span class="s1">ft</span><span class="s2">.</span><span class="s1">Row</span><span class="s2">([</span>
+            <span class="s1">input_field</span><span class="s2">,</span>
+            <span class="s3"># **Adaugă această linie pentru a face ca click pe Send să trimită întrebarea**</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">IconButton</span><span class="s2">(</span><span class="s1">icon</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Icons</span><span class="s2">.</span><span class="s1">SEND</span><span class="s2">, </span><span class="s1">on_click</span><span class="s2">=</span><span class="s1">on_send</span><span class="s2">)  </span><span class="s3"># Apelează on_send la click</span>
+        <span class="s2">]),</span>
+    <span class="s2">], </span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">)</span>
+
+<span class="s3">#a doua pagina din meniu</span>
+<span class="s0">def </span><span class="s1">raspunsuri_view</span><span class="s2">():</span>
+    <span class="s0">return </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Container</span><span class="s2">(</span>
+        <span class="s1">content</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Column</span><span class="s2">([</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">Text</span><span class="s2">(</span><span class="s4">&quot;🧠 Răspunsuri AI salvate&quot;</span><span class="s2">, </span><span class="s1">style</span><span class="s2">=</span><span class="s4">&quot;headlineMedium&quot;</span><span class="s2">),</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">Divider</span><span class="s2">(),</span>
+            <span class="s2">*[</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Container</span><span class="s2">(</span>
+                <span class="s1">content</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Text</span><span class="s2">(</span><span class="s4">f&quot;- </span><span class="s0">{</span><span class="s1">rsp</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s2">, </span><span class="s1">color</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">BLACK</span><span class="s2">),</span>
+                <span class="s1">bgcolor</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">PURPLE_100</span><span class="s2">,</span>
+                <span class="s1">padding</span><span class="s2">=</span><span class="s5">10</span><span class="s2">,</span>
+                <span class="s1">margin</span><span class="s2">=</span><span class="s5">5</span><span class="s2">,</span>
+                <span class="s1">border_radius</span><span class="s2">=</span><span class="s5">10</span>
+            <span class="s2">) </span><span class="s0">for </span><span class="s1">rsp </span><span class="s0">in </span><span class="s1">ai_responses</span><span class="s2">]</span>
+        <span class="s2">],</span>
+        <span class="s1">scroll</span><span class="s2">=</span><span class="s4">&quot;auto&quot;</span><span class="s2">,</span>
+        <span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">,</span>
+        <span class="s1">alignment</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">MainAxisAlignment</span><span class="s2">.</span><span class="s1">START</span><span class="s2">),</span>
+        <span class="s1">alignment</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">alignment</span><span class="s2">.</span><span class="s1">top_left</span><span class="s2">,</span>
+        <span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span>
+    <span class="s2">)</span>
+
+
+
+<span class="s0">def </span><span class="s1">statistici_view</span><span class="s2">():</span>
+    <span class="s0">return </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Column</span><span class="s2">([</span>
+        <span class="s1">ft</span><span class="s2">.</span><span class="s1">Text</span><span class="s2">(</span><span class="s4">&quot;📊 Aici vei vedea statistici.&quot;</span><span class="s2">)</span>
+    <span class="s2">], </span><span class="s1">alignment</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">MainAxisAlignment</span><span class="s2">.</span><span class="s1">START</span><span class="s2">, </span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">)</span>
+
+
+<span class="s0">def </span><span class="s1">despre_view</span><span class="s2">():</span>
+    <span class="s0">return </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Column</span><span class="s2">([</span>
+        <span class="s1">ft</span><span class="s2">.</span><span class="s1">Text</span><span class="s2">(</span><span class="s4">&quot;ℹ️ Aplicație educațională cu AI pentru STEM.&quot;</span><span class="s2">)</span>
+    <span class="s2">], </span><span class="s1">alignment</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">MainAxisAlignment</span><span class="s2">.</span><span class="s1">START</span><span class="s2">, </span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">)</span>
+
+
+<span class="s0">async def </span><span class="s1">main</span><span class="s2">(</span><span class="s1">page</span><span class="s2">: </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Page</span><span class="s2">):</span>
+    <span class="s1">page</span><span class="s2">.</span><span class="s1">title </span><span class="s2">= </span><span class="s4">&quot;QuestBot App&quot;</span>
+    <span class="s1">page</span><span class="s2">.</span><span class="s1">bgcolor </span><span class="s2">= </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">colors</span><span class="s2">.</span><span class="s1">GREY_100</span>
+
+    <span class="s1">content_area </span><span class="s2">= </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Container</span><span class="s2">(</span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">)</span>
+
+    <span class="s0">def </span><span class="s1">update_view</span><span class="s2">(</span><span class="s1">index</span><span class="s2">):</span>
+        <span class="s1">views </span><span class="s2">= [</span>
+            <span class="s1">chat_ai_view</span><span class="s2">(</span><span class="s1">page</span><span class="s2">),</span>
+            <span class="s1">raspunsuri_view</span><span class="s2">(),</span>
+            <span class="s1">statistici_view</span><span class="s2">(),</span>
+            <span class="s1">despre_view</span><span class="s2">()</span>
+        <span class="s2">]</span>
+        <span class="s1">content_area</span><span class="s2">.</span><span class="s1">content </span><span class="s2">= </span><span class="s1">views</span><span class="s2">[</span><span class="s1">index</span><span class="s2">]</span>
+        <span class="s1">page</span><span class="s2">.</span><span class="s1">update</span><span class="s2">()</span>
+
+    <span class="s1">rail </span><span class="s2">= </span><span class="s1">ft</span><span class="s2">.</span><span class="s1">NavigationRail</span><span class="s2">(</span>
+        <span class="s1">selected_index</span><span class="s2">=</span><span class="s5">0</span><span class="s2">,</span>
+        <span class="s1">label_type</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">NavigationRailLabelType</span><span class="s2">.</span><span class="s1">ALL</span><span class="s2">,</span>
+        <span class="s1">destinations</span><span class="s2">=[</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">NavigationRailDestination</span><span class="s2">(</span><span class="s1">icon</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Icons</span><span class="s2">.</span><span class="s1">CHAT</span><span class="s2">, </span><span class="s1">label</span><span class="s2">=</span><span class="s4">&quot;Chat AI&quot;</span><span class="s2">),</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">NavigationRailDestination</span><span class="s2">(</span><span class="s1">icon</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Icons</span><span class="s2">.</span><span class="s1">SAVE</span><span class="s2">, </span><span class="s1">label</span><span class="s2">=</span><span class="s4">&quot;Răspunsuri&quot;</span><span class="s2">),</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">NavigationRailDestination</span><span class="s2">(</span><span class="s1">icon</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Icons</span><span class="s2">.</span><span class="s1">BAR_CHART</span><span class="s2">, </span><span class="s1">label</span><span class="s2">=</span><span class="s4">&quot;Statistici&quot;</span><span class="s2">),</span>
+            <span class="s1">ft</span><span class="s2">.</span><span class="s1">NavigationRailDestination</span><span class="s2">(</span><span class="s1">icon</span><span class="s2">=</span><span class="s1">ft</span><span class="s2">.</span><span class="s1">Icons</span><span class="s2">.</span><span class="s1">INFO</span><span class="s2">, </span><span class="s1">label</span><span class="s2">=</span><span class="s4">&quot;Despre&quot;</span><span class="s2">),</span>
+        <span class="s2">],</span>
+        <span class="s1">on_change</span><span class="s2">=</span><span class="s0">lambda </span><span class="s1">e</span><span class="s2">: </span><span class="s1">update_view</span><span class="s2">(</span><span class="s1">e</span><span class="s2">.</span><span class="s1">control</span><span class="s2">.</span><span class="s1">selected_index</span><span class="s2">),</span>
+    <span class="s2">)</span>
+
+    <span class="s1">update_view</span><span class="s2">(</span><span class="s5">0</span><span class="s2">)</span>
+
+    <span class="s1">page</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span>
+        <span class="s1">ft</span><span class="s2">.</span><span class="s1">Row</span><span class="s2">(</span>
+            <span class="s2">[</span><span class="s1">rail</span><span class="s2">, </span><span class="s1">content_area</span><span class="s2">],</span>
+            <span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span>
+        <span class="s2">)</span>
+    <span class="s2">)</span>
+
+<span class="s1">ft</span><span class="s2">.</span><span class="s1">app</span><span class="s2">(</span><span class="s1">target</span><span class="s2">=</span><span class="s1">main</span><span class="s2">)</span>
+</pre>
+</body>
+</html>
