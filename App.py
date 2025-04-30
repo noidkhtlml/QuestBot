@@ -10,6 +10,8 @@ from Statistici import statistici_view
 
 ai_responses = []  # memorie doar pentru răspunsurile AI-ului
 
+## Am modificat ceva
+
 
 # Funcție pentru a îngroșa textul de tip **cuvânt**
 def parse_bold(text):
