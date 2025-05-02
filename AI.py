@@ -3,9 +3,10 @@ import google.generativeai as genai
 import plotly.graph_objs as go
 from flet.plotly_chart import PlotlyChart
 import asyncio
+from utils import parse_bold
 
 # memorie doar pentru răspunsurile AI-ului
-ai_responses = []
+from storage import ai_responses
 
 # Configurare Gemini
 genai.configure(api_key="AIzaSyBOJFkhhQrQG8x6s6AIzqTDa8uncVEwNmU")
@@ -14,9 +15,10 @@ model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 # Definire funcție pentru a obține răspunsuri de la AI
 async def get_ai_response(prompt):
     try:
-        response = model.generate_content(prompt)
+        response = model.generate_content(f'["conversatia anterioara dintre noi":{str(ai_responses)},"intrebare":{prompt}]')
         return response.text.strip()
     except Exception as e:
+        print(e)
         return "Nu am putut obține un răspuns de la AI."
 
 # Pagina de chat AI

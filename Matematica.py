@@ -120,9 +120,4 @@ def matematica_view(page: ft.Page):
         expand=True,
     )
 
-def main(page: ft.Page):
-    page.title = "Test Matematică"
-    page.scroll = "auto"
-    page.add(matematica_view(page))
 
-ft.app(target=main)

@@ -7,22 +7,9 @@ from HomePage import acasa_view
 from AI import chat_ai_view
 from Raspunsuri import raspunsuri_view
 from Statistici import statistici_view
-
+from Matematica import matematica_view
+from utils import on_chenar_click
 ai_responses = []  # memorie doar pentru răspunsurile AI-ului
-
-## Am modificat ceva
-
-
-# Funcție pentru a îngroșa textul de tip **cuvânt**
-def parse_bold(text):
-    parts = []
-    split = text.split("**")
-    for i, part in enumerate(split):
-        if i % 2 == 0:
-            parts.append(ft.TextSpan(part))
-        else:
-            parts.append(ft.TextSpan(part, style=ft.TextStyle(weight=ft.FontWeight.BOLD)))
-    return ft.Text(spans=parts, selectable=True, color=ft.colors.BLACK)
 
 
 # Pagina Despre
@@ -48,24 +35,25 @@ def pagina_chenar_3():
     return ft.Container(content=ft.Text("🔍 Detalii Chenar 3"), alignment=ft.alignment.center, expand=True)
 
 # Funcția principală
-async def main(page: ft.Page):
+def main(page: ft.Page):
     page.title = "QuestBot App"
     page.bgcolor = ft.colors.GREY_100
 
-    content_area = ft.Container(expand=True)
+    content_area = ft.Container(expand=True,expand_loose=True)
 
     def update_view(index):
         views = [
             acasa_view(page),  # Pagina de pornire cu chenare
             chat_ai_view(page),  # Pagina de chat AI
             statistici_view(),  # Pagina de statistici
+            matematica_view(page),
             raspunsuri_view(),
             despre_view(),
             pagina_grafic(),
             pagina_tabel(),
             pagina_chenar_1(),
             pagina_chenar_2(),
-            pagina_chenar_3()
+            pagina_chenar_3(),
         ]
         content_area.content = views[index]
         page.update()
@@ -77,7 +65,8 @@ async def main(page: ft.Page):
             ft.NavigationRailDestination(icon=ft.Icons.HOME, label="Acasă"),
             ft.NavigationRailDestination(icon=ft.Icons.CHAT, label="Chat AI"),
             ft.NavigationRailDestination(icon=ft.Icons.BAR_CHART, label="Statistici"),
-            ft.NavigationRailDestination(icon=ft.Icons.INFO, label="Despre"),
+            ft.NavigationRailDestination(icon=ft.Icons.CALCULATE, label="Matematică"),
+            ft.NavigationRailDestination(icon=ft.Icons.INFO, label="Istoric"),
         ],
         on_change=lambda e: update_view(e.control.selected_index),
     )

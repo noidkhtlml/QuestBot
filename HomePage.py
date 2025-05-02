@@ -1,6 +1,7 @@
 import flet as ft
 import plotly.graph_objs as go
 from flet.plotly_chart import PlotlyChart
+from utils import parse_bold
 import asyncio
 
 # Pagina de pornire cu chenare
@@ -91,7 +92,7 @@ def acasa_view(page: ft.Page):
     def route_change(route):
         page.views.clear()
         if page.route == "/raport":
-            page.views.append(pagina_raport(page))  # ✅ corect
+            page.views.append(pagina_raport(page))  # corect
         else:
             page.views.append(pagina_start(page))  # și aici, ca să fim consecvenți
         page.update()

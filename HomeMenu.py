@@ -306,5 +306,5 @@ async def main(page: ft.Page):
     )
 
 # Lansează aplicația
-ft.app(target=main, assets_dir="assets")
+
 

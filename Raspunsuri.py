@@ -1,9 +1,10 @@
 import flet as ft
 import plotly.graph_objs as go
 from flet.plotly_chart import PlotlyChart
+from utils import parse_bold
 import asyncio
 
-from HomeMenu import ai_responses
+from storage import ai_responses
 
 def raspunsuri_view():
     return ft.Container(

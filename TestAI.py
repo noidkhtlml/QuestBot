@@ -154,5 +154,3 @@ async def main(page: ft.Page):
             expand=True
         )
     )
-
-ft.app(target=main)
