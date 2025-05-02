@@ -38,6 +38,7 @@ def chat_ai_view(page: ft.Page):
                 alignment=ft.alignment.center_left
             )
         )
+
         chat_column.controls.append(
             ft.Container(
                 content=parse_bold(f"{a}"),

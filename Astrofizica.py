@@ -69,7 +69,6 @@ def astrofizica_view(page: ft.Page):
                         shape=ft.BoxShape.CIRCLE,
                         border=ft.border.all(1, "black"),
                         alignment=ft.alignment.center,
-                        content=ft.Text("VIII", weight="bold"),
                         bottom=-50,
                         right=0,
                     ),

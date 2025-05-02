@@ -1,5 +1,6 @@
 import flet as ft
 
+
 def on_chenar_click(e):
     print(f"Ai dat click pe: {e.control.content.value}")
 
@@ -69,7 +70,6 @@ def fizica_view(page: ft.Page):
                         shape=ft.BoxShape.CIRCLE,
                         border=ft.border.all(1, "black"),
                         alignment=ft.alignment.center,
-                        content=ft.Text("VIII", weight="bold"),
                         bottom=-50,
                         right=0,
                     ),

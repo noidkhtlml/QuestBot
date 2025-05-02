@@ -16,6 +16,7 @@ def statistici_view():
                 margin=ft.margin.only(top=0),  # Eliminăm marginea de sus pentru a-l împinge la început
             ),
 
+
             # Restul conținutului
             ft.Text("Aici vor apărea statisticile și graficele..."),
         ],

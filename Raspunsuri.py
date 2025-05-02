@@ -6,6 +6,7 @@ import asyncio
 
 from storage import ai_responses
 
+
 def raspunsuri_view():
     return ft.Container(
         content=ft.Column([
