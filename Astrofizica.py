@@ -1,4 +1,5 @@
 import flet as ft
+from Lectii import lectie_view
 
 def on_chenar_click(e):
     print(f"Ai dat click pe: {e.control.content.value}")
@@ -28,64 +29,54 @@ def astrofizica_view(page: ft.Page):
 
     return ft.Column(
         controls=[
-            # Titlu + cercuri în colțul dreapta jos
             ft.Stack(
                 controls=[
                     ft.Container(
                         content=ft.Text("Astrofizică", size=40, weight="bold", text_align="center"),
                         width=800,
                         height=180,
-                        bgcolor="#54A0F8",
+                        bgcolor="#2B6EBD",
                         alignment=ft.alignment.center,
                         border_radius=15,
                         border=ft.border.all(1, "black"),
                     ),
-                    # Cerc galben
-                    ft.Container(
-                        width=60,
-                        height=60,
-                        bgcolor="#F6CD46",
-                        shape=ft.BoxShape.CIRCLE,
-                        border=ft.border.all(1, "black"),
-                        left=470,
-                        top=230,
+                    ft.Image(
+                        src="https://cdn-icons-png.flaticon.com/512/3336/3336008.png",  # Saturn
+                        width=80,
+                        height=80,
+                        left=700,
+                        top=150,
+                        fit=ft.ImageFit.CONTAIN,
                     ),
-                    # Cerc alb
-                    ft.Container(
-                        width=40,
-                        height=40,
-                        bgcolor="white",
-                        shape=ft.BoxShape.CIRCLE,
-                        border=ft.border.all(1, "black"),
-                        left=430,
-                        top=200,
+                    ft.Image(
+                        src="https://cdn-icons-png.flaticon.com/512/6699/6699864.png",  # Pluto
+                        width=45,
+                        height=45,
+                        left=500,
+                        top=220,
+                        fit=ft.ImageFit.CONTAIN,
                     ),
-
-                    # Cerc mare cu "VIII"
-                    ft.Container(
-                        width=90,
-                        height=90,
-                        bgcolor="#FDBA74",
-                        shape=ft.BoxShape.CIRCLE,
-                        border=ft.border.all(1, "black"),
-                        alignment=ft.alignment.center,
-                        bottom=-50,
-                        right=0,
+                    ft.Image(
+                        src="https://cdn-icons-png.flaticon.com/512/9985/9985721.png",  # Terra
+                        width=70,
+                        height=70,
+                        left=585,
+                        top=250,
+                        fit=ft.ImageFit.CONTAIN,
                     ),
                 ],
-                width=600,
+                width=800,
                 height=180,
-                clip_behavior=ft.ClipBehavior.NONE
+                clip_behavior=ft.ClipBehavior.NONE,
             ),
 
-            # Chenarele tematice (roz + verde)
             ft.Row(
                 controls=[
                     ft.Container(
                         content=ft.Text("Understanding\nscale drawing", text_align="center"),
                         width=180,
                         height=140,
-                        bgcolor="#F9A8D4",
+                        bgcolor="#5CE1E6",
                         border_radius=15,
                         border=ft.border.all(1, "black"),
                         alignment=ft.alignment.center,
@@ -96,7 +87,7 @@ def astrofizica_view(page: ft.Page):
                         content=ft.Text("Scale drawing\nexamples", text_align="center"),
                         width=180,
                         height=140,
-                        bgcolor="#6EE7B7",
+                        bgcolor="#CB6CE6",
                         border_radius=15,
                         border=ft.border.all(1, "black"),
                         alignment=ft.alignment.center,
@@ -118,5 +109,3 @@ def astrofizica_view(page: ft.Page):
         scroll="auto",
         expand=True,
     )
-
-
