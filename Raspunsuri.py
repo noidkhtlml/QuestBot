@@ -7,7 +7,7 @@ import asyncio
 from storage import ai_responses
 
 
-def raspunsuri_view():
+def raspunsuri_view(page: ft.Page):
     return ft.Container(
         content=ft.Column([
             ft.Text("Răspunsuri AI salvate", style="headlineMedium"),

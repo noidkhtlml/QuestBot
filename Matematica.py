@@ -1,24 +1,34 @@
 import flet as ft
 
-def on_chenar_click(e):
-    print(f"Ai dat click pe: {e.control.content.value}")
+def on_chenar_click(page,key):
+    page.go(f"/lectie?{key}")
+
+class Chenar(ft.Container):
+    def __init__(self,key: str,page: ft.Page):
+        super().__init__()
+        self.key = key
+        self.page = page
+        self.content = ft.Container(
+            content=ft.Text(f"Chenar {self.key}", text_align="center"),
+            width=120,
+            height=100,
+            bgcolor="#E0F2FE",
+            border_radius=10,
+            border=ft.border.all(1, "black"),
+            alignment=ft.alignment.center,
+            on_click=lambda _: on_chenar_click(self.page,self.key),
+            ink=True,
+        )
+
+
 
 def matematica_view(page: ft.Page):
+
     # 20 de chenare (5 rânduri x 4 coloane)
     chenare = []
     for i in range(1, 21):
         chenare.append(
-            ft.Container(
-                content=ft.Text(f"Chenar {i}", text_align="center"),
-                width=120,
-                height=100,
-                bgcolor="#E0F2FE",
-                border_radius=10,
-                border=ft.border.all(1, "black"),
-                alignment=ft.alignment.center,
-                on_click=on_chenar_click,
-                ink=True,
-            )
+            Chenar(f"{i}",page)
         )
 
     chenar_grid = ft.Column([

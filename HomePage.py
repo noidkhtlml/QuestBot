@@ -4,18 +4,26 @@ from flet.plotly_chart import PlotlyChart
 from utils import parse_bold
 import asyncio
 
+# Funcție pentru schimbarea rutei
+def route_change(page: ft.Page):
+    """Funcția de schimbare a rutei."""
+    if page.route == "/":
+        page.add(acasa_view(page))
+    elif page.route == "/raport":
+        page.add(pagina_raport(page))
+    else:
+        page.add(ft.Text("Pagina nu a fost găsită!", size=24, weight="bold", color="red"))
+
 # Pagina de pornire cu chenare
 def acasa_view(page: ft.Page):
     fig = go.Figure(
-        data=[
-            go.Scatter(
-                x=["Ian", "Feb", "Mar"],
-                y=[10, 15, 7],
-                mode="lines+markers",
-                line=dict(color="#8B5CF6", width=3),
-                marker=dict(size=8, color="#C084FC"),
-            )
-        ]
+        data=[go.Scatter(
+            x=["Ian", "Feb", "Mar"],
+            y=[10, 15, 7],
+            mode="lines+markers",
+            line=dict(color="#8B5CF6", width=3),
+            marker=dict(size=8, color="#C084FC"),
+        )]
     )
     fig.update_layout(
         plot_bgcolor="#FFFFFF",
@@ -46,13 +54,12 @@ def acasa_view(page: ft.Page):
 
     extra_cards = ft.Row([
         ft.Container(
-            content=ft.Image(),
+            content=ft.Text("Chenar 1"),
             bgcolor="#DDD6FE",
             border_radius=12,
             padding=10,
             width=180,
             height=120
-
         ),
         ft.Container(
             content=ft.Text("Chenar 2"),
@@ -80,22 +87,15 @@ def acasa_view(page: ft.Page):
     ], expand=True)
 
 
-    def pagina_raport():
-        return ft.View(
-            "/raport",
-            controls=[
-                ft.Text("Raport Detaliat", size=24, weight="bold"),
-                ft.ElevatedButton("← Înapoi", on_click=lambda e: page.go("/")),
-            ],
-        )
+# Funcția pentru pagina raport
+def pagina_raport(page: ft.Page):
+    return ft.View(
+        "/raport",
+        controls=[
+            ft.Text("Raport Detaliat", size=24, weight="bold"),
+            ft.ElevatedButton("← Înapoi", on_click=lambda e: page.go("/")),
+        ],
+    )
 
-    def route_change(route):
-        page.views.clear()
-        if page.route == "/raport":
-            page.views.append(pagina_raport(page))  # corect
-        else:
-            page.views.append(pagina_start(page))  # și aici, ca să fim consecvenți
-        page.update()
 
-    page.on_route_change = route_change
-    page.go(page.route)
+

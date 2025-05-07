@@ -7,7 +7,7 @@ from uritemplate import expand
 
 
 # Pagina de statistici
-def statistici_view():
+def statistici_view(page: ft.Page):
     return ft.Container(
         content=ft.Column([
             # Titlul cu margine pentru a-l alinia sus

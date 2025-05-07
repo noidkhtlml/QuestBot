@@ -208,15 +208,6 @@ def acasa_view(page: ft.Page):
                 ft.ElevatedButton("← Înapoi", on_click=lambda e: page.go("/")),
             ],
         )
-
-    def route_change(route):
-        page.views.clear()
-        if page.route == "/raport":
-            page.views.append(pagina_raport(page))  # ✅ corect
-        else:
-            page.views.append(pagina_start(page))  # și aici, ca să fim consecvenți
-        page.update()
-
     page.on_route_change = route_change
     page.go(page.route)
 
