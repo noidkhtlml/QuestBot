@@ -57,7 +57,7 @@ def matematica_view(page: ft.Page):
                         bgcolor="#F6CD46",
                         shape=ft.BoxShape.CIRCLE,
                         border=ft.border.all(1, "black"),
-                        left=470,
+                        left=600,
                         top=230,
                     ),
                     # Cerc alb
@@ -67,7 +67,7 @@ def matematica_view(page: ft.Page):
                         bgcolor="white",
                         shape=ft.BoxShape.CIRCLE,
                         border=ft.border.all(1, "black"),
-                        left=430,
+                        left=530,
                         top=200,
                     ),
 
@@ -84,7 +84,7 @@ def matematica_view(page: ft.Page):
                         right=0,
                     ),
                 ],
-                width=600,
+                width=800,
                 height=180,
                 clip_behavior=ft.ClipBehavior.NONE
             ),

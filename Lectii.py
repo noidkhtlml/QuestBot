@@ -11,7 +11,7 @@ lectii = {
     2: ("Soarele", "Soarele este steaua din centrul sistemului nostru solar..."),
     3: ("Pământul", "Pământul este a treia planetă de la Soare și singura cunoscută cu viață..."),
     4: ("Luna", "Luna este satelitul natural al Pământului..."),
-    # Poți adăuga mai multe aici
+    5:("o da")
 }
 
 # Funcția pentru afișarea unei lecții
