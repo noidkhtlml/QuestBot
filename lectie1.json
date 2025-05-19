@@ -1,0 +1,18 @@
+{
+  "1": {
+    "titlu": "Dreptele importante într-un triunghi",
+    "teorie": "Într-un triunghi, există mai multe drepte importante care ajută la înțelegerea proprietăților geometrice ale figurii. Acestea sunt: mediana, bisectoarea, mediatoarea și înălțimea. Mediana este segmentul care unește un vârf cu mijlocul laturii opuse. Bisectoarea este semidreapta care împarte un unghi în două unghiuri congruente. Mediatoarea este dreapta perpendiculară pe o latură, dusă prin mijlocul acelei laturi. Înălțimea este segmentul perpendicular pe o latură (sau prelungirea ei), dus din vârful opus.",
+    "formule": [
+      "Mediana AD: D este mijlocul laturii BC",
+      "Înălțimea din A: perpendiculară pe BC",
+      "Bisectoarea: împarte unghiul în două unghiuri egale"
+    ],
+    "intrebare": "Ce reprezintă mediatoarea unei laturi într-un triunghi?",
+    "raspunsuri": [
+      "Segmentul care unește vârful cu mijlocul laturii opuse",
+      "Dreapta perpendiculară pe o latură în mijlocul ei",
+      "Segmentul care împarte un unghi în două"
+    ],
+    "corect": "Dreapta perpendiculară pe o latură în mijlocul ei"
+  }
+}
