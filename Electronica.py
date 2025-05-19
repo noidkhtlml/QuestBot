@@ -1,38 +1,34 @@
 import flet as ft
-from Lectii import lectie_view
-from storage import titluri_chenare
-
 
 def on_chenar_click(page,key):
     page.go(f"/lectie?{key}")
 
-
 class Chenar(ft.Container):
-    def __init__(self, key: str, page: ft.Page, title: str):  # adăugat parametru title
+    def __init__(self,key: str,page: ft.Page):
         super().__init__()
         self.key = key
         self.page = page
         self.content = ft.Container(
-            content=ft.Text(title, text_align="center"),  # afișează titlul
+            content=ft.Text(f"Chenar {self.key}", text_align="center"),
             width=120,
             height=100,
             bgcolor="#E0F2FE",
             border_radius=10,
             border=ft.border.all(1, "black"),
             alignment=ft.alignment.center,
-            on_click=lambda _: on_chenar_click(self.page, self.key),
+            on_click=lambda _: on_chenar_click(self.page,self.key),
             ink=True,
         )
 
 
 
-def astrofizica_view(page: ft.Page):
+def electronica_view(page: ft.Page):
 
     # 20 de chenare (5 rânduri x 4 coloane)
     chenare = []
-    for i in range(20):
+    for i in range(21, 42):
         chenare.append(
-            Chenar(str(i + 1), page, titluri_chenare[i])
+            Chenar(f"{i}",page)
         )
 
     chenar_grid = ft.GridView(
@@ -47,54 +43,33 @@ def astrofizica_view(page: ft.Page):
 
     return ft.Column(
         controls=[
+            # Titlu + cercuri în colțul dreapta jos
             ft.Stack(
                 controls=[
                     ft.Container(
-                        content=ft.Text("Astrofizică", size=40, weight="bold", text_align="center"),
-                        expand=True,
-                        height=2500,
-                        bgcolor="#2B6EBD",
+                        content=ft.Text("Electronică", size=70, weight="bold", text_align="center"),
+                        height=250,
+                        bgcolor="#54A0F8",
                         alignment=ft.alignment.center,
                         border_radius=15,
                         border=ft.border.all(1, "black"),
+                        expand=True,
                     ),
-                    ft.Image(
-                        src="https://cdn-icons-png.flaticon.com/512/3336/3336008.png",  # Saturn
-                        width=80,
-                        height=80,
-                        left=700,
-                        top=150,
-                        fit=ft.ImageFit.CONTAIN,
-                    ),
-                    ft.Image(
-                        src="https://cdn-icons-png.flaticon.com/512/6699/6699864.png",  # Pluto
-                        width=45,
-                        height=45,
-                        left=500,
-                        top=220,
-                        fit=ft.ImageFit.CONTAIN,
-                    ),
-                    ft.Image(
-                        src="https://cdn-icons-png.flaticon.com/512/9985/9985721.png",  # Terra
-                        width=70,
-                        height=70,
-                        left=585,
-                        top=250,
-                        fit=ft.ImageFit.CONTAIN,
-                    ),
+
                 ],
-                expand=True,
-                height=250,
-                clip_behavior=ft.ClipBehavior.NONE,
+                expand = True,
+                height = 250,
+                clip_behavior = ft.ClipBehavior.NONE
             ),
 
+            # Chenarele tematice (roz + verde)
             ft.Row(
                 controls=[
                     ft.Container(
                         content=ft.Text("Understanding\nscale drawing", text_align="center"),
                         width=180,
                         height=140,
-                        bgcolor="#5CE1E6",
+                        bgcolor="#F9A8D4",
                         border_radius=15,
                         border=ft.border.all(1, "black"),
                         alignment=ft.alignment.center,
@@ -105,7 +80,7 @@ def astrofizica_view(page: ft.Page):
                         content=ft.Text("Scale drawing\nexamples", text_align="center"),
                         width=180,
                         height=140,
-                        bgcolor="#CB6CE6",
+                        bgcolor="#6EE7B7",
                         border_radius=15,
                         border=ft.border.all(1, "black"),
                         alignment=ft.alignment.center,
@@ -115,7 +90,7 @@ def astrofizica_view(page: ft.Page):
                 ],
                 alignment=ft.MainAxisAlignment.START,
                 spacing=30,
-                expand=True,
+                expand = True,
             ),
 
             ft.Divider(height=30, color="transparent"),
@@ -127,3 +102,5 @@ def astrofizica_view(page: ft.Page):
         scroll="auto",
         expand=True,
     )
+
+

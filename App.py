@@ -3,6 +3,8 @@ import google.generativeai as genai
 import plotly.graph_objs as go
 from flet.plotly_chart import PlotlyChart
 import asyncio
+
+from Electronica import electronica_view
 from HomePage import acasa_view
 from AI import chat_ai_view
 from Raspunsuri import raspunsuri_view
@@ -52,6 +54,7 @@ def main(page: ft.Page):
             statistici_view(page),  # Pagina de statistici
             matematica_view(page),
             astrofizica_view(page),
+            electronica_view(page),
             raspunsuri_view(page),
             despre_view(),
             pagina_grafic(),
@@ -76,7 +79,8 @@ def main(page: ft.Page):
             ft.NavigationRailDestination(icon=ft.Icons.CHAT, label="Chat AI"),
             ft.NavigationRailDestination(icon=ft.Icons.BAR_CHART, label="Statistici"),
             ft.NavigationRailDestination(icon=ft.Icons.CALCULATE, label="Matematică"),
-            ft.NavigationRailDestination(icon=ft.Icons.CALCULATE, label="Astrofizică"),
+            ft.NavigationRailDestination(icon=ft.Icons.CALCULATE, label="Astronomie"),
+            ft.NavigationRailDestination(icon=ft.Icons.CALCULATE, label="Electronică"),
             ft.NavigationRailDestination(icon=ft.Icons.INFO, label="Istoric"),
         ],
         on_change=lambda e: update_view(e.control.selected_index),

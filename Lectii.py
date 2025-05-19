@@ -1,27 +1,26 @@
 import flet as ft
-
 from utils import intoarcere_la_lectii
 from utils import parse_bold
 from utils import verifica_raspuns
+import json
+from utils import genereaza_pagina_lectie
 
 
-# Lecții disponibile (mapate după ID-ul chenarelor)
-lectii = {
-    1: ("Sistemul Solar", "Sistemul Solar este format din 8 planete și alte corpuri cerești..."),
-    2: ("Soarele", "Soarele este steaua din centrul sistemului nostru solar..."),
-    3: ("Pământul", "Pământul este a treia planetă de la Soare și singura cunoscută cu viață..."),
-    4: ("Luna", "Luna este satelitul natural al Pământului..."),
-    5:("o da")
-}
+# Încarcă lecțiile din fișierul JSON (cheile rămân stringuri)
+with open("lectii.json", "r", encoding="utf-8") as file:
+    lectii = json.load(file)
 
 # Funcția pentru afișarea unei lecții
-def lectie_view(page: ft.Page,chenar_id: str):
+def lectie_view(page: ft.Page, chenar_id: str):
     titlu, continut = lectii.get(chenar_id, ("Lecție indisponibilă", "Această lecție nu este încă definită."))
 
     rezultat_text = ft.Text("", size=16)
     scor_text = ft.Text("", size=16)
-
     selected_value = ft.Ref[ft.RadioGroup]()
+
+    # Separă conținutul în paragrafe (cu două linii noi între ele)
+    paragrafe = continut.split("\n\n")
+    blocuri_text = [ft.Text(p.strip(), size=16) for p in paragrafe if p.strip()]
 
     def verifica_raspuns(e):
         valoare = selected_value.current.value
@@ -50,7 +49,8 @@ def lectie_view(page: ft.Page,chenar_id: str):
     return ft.Column(
         controls=[
             ft.Text(titlu, size=30, weight="bold"),
-            ft.Text(continut, size=16),
+            ft.Divider(thickness=2),
+            *blocuri_text,
             ft.Divider(height=20),
             ft.Text("Test interactiv:", size=20, weight="bold"),
             ft.RadioGroup(
@@ -65,7 +65,7 @@ def lectie_view(page: ft.Page,chenar_id: str):
             rezultat_text,
             scor_text,
             ft.Divider(height=20),
-            ft.ElevatedButton("Înapoi la lecții", on_click=intoarcere_la_lectii),
         ],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        scroll="auto",
     )

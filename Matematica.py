@@ -31,10 +31,15 @@ def matematica_view(page: ft.Page):
             Chenar(f"{i}",page)
         )
 
-    chenar_grid = ft.Column([
-        ft.Row(controls=chenare[i:i+4], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
-        for i in range(0, 20, 4)
-    ])
+    chenar_grid = ft.GridView(
+        expand=True,
+        runs_count=4,  # număr de coloane dorit pe ecrane mai mari
+        max_extent=150,  # lățime maximă per item – se ajustează automat
+        child_aspect_ratio=1,  # păstrează pătrățele (sau ajustează la nevoie)
+        spacing=20,
+        run_spacing=20,
+        controls=chenare,
+    )
 
     return ft.Column(
         controls=[
@@ -42,54 +47,34 @@ def matematica_view(page: ft.Page):
             ft.Stack(
                 controls=[
                     ft.Container(
-                        content=ft.Text("Matematică", size=40, weight="bold", text_align="center"),
-                        width=800,
-                        height=180,
+                        content=ft.Text("Matematică", size=70, weight="bold", text_align="center"),
+                        height=250,
                         bgcolor="#54A0F8",
                         alignment=ft.alignment.center,
                         border_radius=15,
                         border=ft.border.all(1, "black"),
-                    ),
-                    # Cerc galben
-                    ft.Container(
-                        width=60,
-                        height=60,
-                        bgcolor="#F6CD46",
-                        shape=ft.BoxShape.CIRCLE,
-                        border=ft.border.all(1, "black"),
-                        left=600,
-                        top=230,
-                    ),
-                    # Cerc alb
-                    ft.Container(
-                        width=40,
-                        height=40,
-                        bgcolor="white",
-                        shape=ft.BoxShape.CIRCLE,
-                        border=ft.border.all(1, "black"),
-                        left=530,
-                        top=200,
+                        expand=True,
                     ),
 
                     # Cerc mare cu "VIII"
                     ft.Container(
-                        width=90,
-                        height=90,
+                        width=120,
+                        height=120,
                         bgcolor="#FDBA74",
                         shape=ft.BoxShape.CIRCLE,
                         border=ft.border.all(1, "black"),
                         alignment=ft.alignment.center,
-                        content=ft.Text("VIII", weight="bold"),
+                        content=ft.Text("VIII", size=30, weight="bold"),
                         bottom=-50,
-                        right=0,
+                        right=10,
                     ),
                 ],
-                width=800,
-                height=180,
-                clip_behavior=ft.ClipBehavior.NONE
+                expand = True,
+                height = 250,
+                clip_behavior = ft.ClipBehavior.NONE
             ),
 
-            # Chenarele tematice (roz + verde)
+            # Chenarele de pe randul 2
             ft.Row(
                 controls=[
                     ft.Container(
@@ -117,7 +102,7 @@ def matematica_view(page: ft.Page):
                 ],
                 alignment=ft.MainAxisAlignment.START,
                 spacing=30,
-                width=600,
+                expand = True,
             ),
 
             ft.Divider(height=30, color="transparent"),
