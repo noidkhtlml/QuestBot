@@ -38,7 +38,7 @@ source venv/bin/activate
 pip install flet
 ###4.Rulare
 python app.py
-
+```
 
 ### 1. Introducere
 Questbot este o solutie educationala care integreaza o platforma software interactiva cu un robot fizic, pentru a sustine invatarea practica in domeniile STEM (stiinta, tehnologie, inginerie si matematica). Acest document detaliaza tehnologiile utilizate in dezvoltarea celor doua componente majore: software-ul educational si robotul fizic.
