@@ -1,6 +1,6 @@
 # 🤖 Questbot
 
-**Questbot** este o aplicație desktop interactivă dezvoltată cu [Flet](https://flet.dev), care poate rula pe orice sistem de operare ce suportă Python (Windows, macOS, Linux). Este accesibilă atât ca aplicație desktop, cât și din browser de pe alte dispozitive din rețea (telefon, laptop etc.).
+**Questbot** este o aplicație desktop interactivă dezvoltată cu [Flutter](https://flet.dev), care poate rula pe orice sistem de operare ce suportă Python (Windows, macOS, Linux). Este accesibilă atât ca aplicație desktop, cât și din browser de pe alte dispozitive din rețea (telefon, laptop etc.).
 
 > Acest proiect a fost realizat pentru participarea în cadrul Infoeducație
 ---
