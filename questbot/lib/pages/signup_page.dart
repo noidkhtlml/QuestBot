@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -14,43 +12,55 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _signUp() async {
-    try {
-      final String userId = _userIdController.text.trim();
-      final String email = _emailController.text.trim();
-      final String password = _passwordController.text.trim();
+  // Simulăm o bază de date locală temporară
+  static final List<Map<String, String>> _fakeUsers = [];
 
-      // 1. Creează cont în Firebase Auth
-      final userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+  void _signUp() {
+    final String userId = _userIdController.text.trim();
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
 
-      final uid = userCredential.user?.uid;
+    final alreadyExists = _fakeUsers.any((user) => user['email'] == email);
 
-      // 2. Salvează user-ul în Firestore
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'userId': userId,
-        'email': email,
-        'createdAt': Timestamp.now(),
-      });
-
-      // Navighează la home sau login
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/login');
-    } on FirebaseAuthException catch (e) {
+    if (alreadyExists) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Eroare la înregistrare"),
-          content: Text(e.message ?? 'Eroare necunoscută'),
+        builder: (_) => AlertDialog(
+          title: const Text('Eroare'),
+          content: const Text('Există deja un cont cu acest email.'),
           actions: [
             TextButton(
-              child: const Text("OK"),
-              onPressed: () => Navigator.of(context).pop(),
-            )
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
           ],
         ),
       );
+      return;
     }
+
+    _fakeUsers.add({
+      'userId': userId,
+      'email': email,
+      'password': password,
+    });
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Cont creat'),
+        content: const Text('Contul a fost creat cu succes.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // închide dialogul
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

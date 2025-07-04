@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'pages/matematica.dart';
-import 'pages/astronomie.dart';
-import 'pages/electronica.dart';
-import 'pages/ai.dart';
-import 'pages/statistici.dart';
-import 'pages/chatbot.dart';
+import 'matematica.dart';
+import 'astronomie.dart';
+import 'electronica.dart';
+import 'ai.dart';
+import 'statistici.dart';
+import 'chatbot.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,78 +20,108 @@ class _HomePageState extends State<HomePage> {
     MatematicaPage(),
     AstronomiePage(),
     ElectronicaPage(),
-    AIPage(),
+    AiPage(),
     StatisticiPage(),
-    ChatBotPage(),
+    ChatPage(),
   ];
 
-  final List<NavigationRailDestination> destinations = const [
-    NavigationRailDestination(icon: Icon(Icons.home), label: Text('Acasă')),
-    NavigationRailDestination(icon: Icon(Icons.bar_chart), label: Text('Statistici')),
-    NavigationRailDestination(icon: Icon(Icons.public), label: Text('Astronomie')),
-    NavigationRailDestination(icon: Icon(Icons.memory), label: Text('Electronică')),
-    NavigationRailDestination(icon: Icon(Icons.history), label: Text('Istoric')),
+  final List<String> titles = [
+    'Matematică',
+    'Astronomie',
+    'Electronică',
+    'AI',
+    'Statistici',
+    'Chat Bot',
+  ];
+
+  final List<IconData> icons = [
+    Icons.functions,
+    Icons.public,
+    Icons.memory,
+    Icons.hub,
+    Icons.bar_chart,
+    Icons.tag_faces,
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: selectedIndex,
-            onDestinationSelected: (index) => setState(() => selectedIndex = index),
-            labelType: NavigationRailLabelType.all,
-            destinations: destinations,
+      backgroundColor: Colors.white, // fundal alb
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Salut! Ce vrei să înveți azi?',
+          style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: false,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          itemCount: pages.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // două coloane
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            childAspectRatio: 1.2,
           ),
-          const VerticalDivider(thickness: 1, width: 1),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: Text(
-                      'Salut! Ce vrei să înveți azi?',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      buildButton(context, 'Matematică', Icons.square_root_alt, 0),
-                      buildButton(context, 'Astronomie', Icons.public, 1),
-                      buildButton(context, 'Electronică', Icons.memory, 2),
-                      buildButton(context, 'AI', Icons.hub, 3),
-                      buildButton(context, 'Statistici', Icons.bar_chart, 4),
-                      buildButton(context, 'Chat Bot', Icons.tag_faces, 5),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+          itemBuilder: (context, index) {
+            return buildSpotifyCard(index);
+          },
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
+        onTap: (index) {
+          setState(() => selectedIndex = index);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => pages[index]),
+          );
+        },
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+        backgroundColor: Colors.white,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.functions), label: 'Matematică'),
+          BottomNavigationBarItem(icon: Icon(Icons.public), label: 'Astronomie'),
+          BottomNavigationBarItem(icon: Icon(Icons.memory), label: 'Electronică'),
+          BottomNavigationBarItem(icon: Icon(Icons.hub), label: 'AI'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Statistici'),
+          BottomNavigationBarItem(icon: Icon(Icons.tag_faces), label: 'Chat'),
         ],
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }
 
-  Widget buildButton(BuildContext context, String title, IconData icon, int pageIndex) {
-    return ElevatedButton.icon(
-      icon: Icon(icon),
-      label: Text(title),
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-        textStyle: const TextStyle(fontSize: 18),
-      ),
-      onPressed: () {
+  Widget buildSpotifyCard(int index) {
+    return InkWell(
+      onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => pages[pageIndex]),
+          MaterialPageRoute(builder: (_) => pages[index]),
         );
       },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icons[index], size: 40, color: Colors.black),
+            const SizedBox(height: 10),
+            Text(
+              titles[index],
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

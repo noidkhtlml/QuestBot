@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,22 +11,23 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Dummy credentials (poți înlocui cu sistem local real)
+  final String _dummyEmail = 'test@example.com';
+  final String _dummyPassword = '123456';
+
   Future<void> _login() async {
-    try {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-
+    if (email == _dummyEmail && password == _dummyPassword) {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home'); // sau orice pagină principală
-
-    } on FirebaseAuthException catch (e) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Eroare la login'),
-          content: Text(e.message ?? 'Eroare necunoscută'),
+          title: const Text('Login eșuat'),
+          content: const Text('Email sau parolă incorectă.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Parolă'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

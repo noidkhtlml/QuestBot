@@ -32,9 +32,8 @@ dependencies:
     sdk: flutter
   fl_chart: ^1.0.0
 # pentru baza de date:
-  firebase_core: ^3.15.0
-  firebase_auth: ^5.6.1
-  cloud_firestore: ^5.6.10
+
+
 # pentru ai:
   http: ^1.4.0
 
@@ -67,6 +66,7 @@ flutter:
 
   assets:
     - assets/questbot.png
+    - assets/lectii.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

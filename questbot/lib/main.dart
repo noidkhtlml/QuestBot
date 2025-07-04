@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'pages/home_screen.dart';
-import 'pages/login_page.dart';
-import 'pages/signup_page.dart';
-import 'utils/firebase_options.dart';
+import 'pages/home_page.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+void main() {
   runApp(const QuestBotApp());
 }
 
@@ -23,14 +16,7 @@ class QuestBotApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFFF8A9A),
       ),
-      initialRoute: '/home',
-      routes: {
-        '/home': (context) => const HomePage(),
-        '/login': (context) => const LoginPage(),
-        '/signup': (context) => const SignupPage(),
-      },
+      home: const HomePage(),
     );
   }
 }
-
-
