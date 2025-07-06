@@ -1,127 +1,95 @@
 import 'package:flutter/material.dart';
-import 'matematica.dart';
-import 'astronomie.dart';
-import 'electronica.dart';
-import 'ai.dart';
-import 'statistici.dart';
-import 'chatbot.dart';
+import '../utils/route_change.dart';
+import '../utils/main_layout.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    final List<_SubjectData> subjects = const [
+      _SubjectData('Matematică', Icons.calculate, '/neuro'),
+      _SubjectData('Astronomie', Icons.public, '/astro'),
+      _SubjectData('Electronică', Icons.memory, '/electronica'),
+      _SubjectData('AI', Icons.hub, '/ai'),
+      _SubjectData('Statistici', Icons.bar_chart, '/statistici'),
+      _SubjectData('Chat Bot', Icons.chat, '/chatbot'),
+    ];
+
+    return MainLayout(
+      selectedIndex: 0,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'questbot',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Ce vrei să înveți azi?',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: subjects.map((subject) {
+                  return GestureDetector(
+                    onTap: () => routeChangeNamed(context, subject.route),
+                    child: Chip(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(subject.icon, size: 20, color: Colors.black87),
+                          const SizedBox(width: 6),
+                          Text(subject.title, style: const TextStyle(color: Colors.black87)),
+                        ],
+                      ),
+                      backgroundColor: Colors.grey.shade200,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 40),
+              const TextField(
+                decoration: InputDecoration(
+                  hintText: 'Scrie aici idei, gânduri, notițe...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  filled: true,
+                  fillColor: Color(0xFFF5F5F5),
+                ),
+                maxLines: 5,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  int selectedIndex = 0;
+class _SubjectData {
+  final String title;
+  final IconData icon;
+  final String route;
 
-  final List<Widget> pages = const [
-    MatematicaPage(),
-    AstronomiePage(),
-    ElectronicaPage(),
-    AiPage(),
-    StatisticiPage(),
-    ChatPage(),
-  ];
-
-  final List<String> titles = [
-    'Matematică',
-    'Astronomie',
-    'Electronică',
-    'AI',
-    'Statistici',
-    'Chat Bot',
-  ];
-
-  final List<IconData> icons = [
-    Icons.functions,
-    Icons.public,
-    Icons.memory,
-    Icons.hub,
-    Icons.bar_chart,
-    Icons.tag_faces,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white, // fundal alb
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Salut! Ce vrei să înveți azi?',
-          style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          itemCount: pages.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // două coloane
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 1.2,
-          ),
-          itemBuilder: (context, index) {
-            return buildSpotifyCard(index);
-          },
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          setState(() => selectedIndex = index);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => pages[index]),
-          );
-        },
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.functions), label: 'Matematică'),
-          BottomNavigationBarItem(icon: Icon(Icons.public), label: 'Astronomie'),
-          BottomNavigationBarItem(icon: Icon(Icons.memory), label: 'Electronică'),
-          BottomNavigationBarItem(icon: Icon(Icons.hub), label: 'AI'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Statistici'),
-          BottomNavigationBarItem(icon: Icon(Icons.tag_faces), label: 'Chat'),
-        ],
-        type: BottomNavigationBarType.fixed,
-      ),
-    );
-  }
-
-  Widget buildSpotifyCard(int index) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => pages[index]),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icons[index], size: 40, color: Colors.black),
-            const SizedBox(height: 10),
-            Text(
-              titles[index],
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  const _SubjectData(this.title, this.icon, this.route);
 }

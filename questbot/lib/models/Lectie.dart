@@ -100,11 +100,24 @@ class _LectiePageState extends State<LectiePage> {
 
     List<Widget> continutControls = [];
 
-    // Titlu
-    continutControls.add(Text(
-      lectieData['titlul'] ?? '',
-      style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black87),
-    ));
+// Titlu cu fundal verde
+    continutControls.add(
+      Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: const Color(0xFF2BBBAD),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Text(
+          lectieData['titlul'] ?? '',
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+
 
     // Conținut
     for (var item in lectieData['continut'] ?? []) {
@@ -121,24 +134,24 @@ class _LectiePageState extends State<LectiePage> {
       }
 
       // Teorie
+      for (var definitie in item['definitie'] ?? []) {
+        Color culoare = colorPalette[Random().nextInt(colorPalette.length)];
+        String subtitlu = definitie['subtitlu'] ?? '';
+        List<String> paragrafe = List<String>.from(definitie['paragraf'] ?? []);
+        continutControls.add(buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
+      }
+
+
+      // Formule
       for (var bloc in item['teorie'] ?? []) {
         String subtitlu = bloc['subtitlu'] ?? '';
-        if (subtitlu.isNotEmpty) {
-          continutControls.add(Text(
-            subtitlu,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF4A4E69)),
-          ));
-        }
-        for (var paragraf in bloc['paragraf'] ?? []) {
-          continutControls.add(Text(paragraf, style: TextStyle(fontSize: 16)));
+        List<String> paragrafe = List<String>.from(bloc['paragraf'] ?? []);
+        if (subtitlu.isNotEmpty && paragrafe.isNotEmpty) {
+          Color culoare = colorPalette[Random().nextInt(colorPalette.length)];
+          continutControls.add(buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
         }
       }
 
-      // Formule
-      var formule = item['formule'];
-      if (formule != null) {
-        continutControls.add(Text("🧮 Formule: $formule", style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)));
-      }
 
       // Tabel
       var tabel = item['tabel'];
@@ -188,41 +201,41 @@ class _LectiePageState extends State<LectiePage> {
       backgroundColor: Color(0xFFFDFDFD),
     );
   }
-  Widget buildNavigationRail(BuildContext context) {
-    return NavigationRail(
-      selectedIndex: 3,
-      onDestinationSelected: (int index) {
-        // Logica de navigare
-      },
-      labelType: NavigationRailLabelType.all,
-      destinations: const [
-        NavigationRailDestination(
-          icon: Icon(Icons.home),
-          label: Text('Acasă'),
+
+  Widget buildSubtitluCuParagraf(String subtitlu, List<String> paragrafe, Color culoare) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: culoare,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Text(
+            subtitlu,
+            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
         ),
-        NavigationRailDestination(
-          icon: Icon(Icons.chat),
-          label: Text('Chat AI'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.bar_chart),
-          label: Text('Statistici'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.calculate),
-          label: Text('Matematică'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.public),
-          label: Text('Astronomie'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.memory),
-          label: Text('Electronică'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.info),
-          label: Text('Istoric'),
+        const SizedBox(height: 6),
+        Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF6F6F6),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.black, width: 1),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: paragrafe
+                .map((p) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(p, style: const TextStyle(fontSize: 16)),
+            ))
+                .toList(),
+          ),
         ),
       ],
     );

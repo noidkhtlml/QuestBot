@@ -1,132 +1,177 @@
 import 'package:flutter/material.dart';
-import '../utils/chat_service.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../utils/main_layout.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatPage> createState() => _ChatAIPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatAIPageState extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
-  final List<Map<String, String>> _messages = [];
+  final List<Map<String, dynamic>> aiResponses = [];
+  bool _isSending = false;
 
-  bool _loading = false;
+  final _model = GenerativeModel(
+    model: 'gemini-1.5-flash',
+    apiKey: 'AIzaSyBOJFkhhQrQG8x6s6AIzqTDa8uncVEwNmU',
+  );
 
-  void _sendMessage() async {
-    final question = _controller.text.trim();
-    if (question.isEmpty) return;
-
-    setState(() {
-      _messages.add({'role': 'user', 'text': question});
-      _controller.clear();
-      _loading = true;
-    });
-
-    final answer = await ChatService.getResponse(question);
-
-    setState(() {
-      _messages.add({'role': 'ai', 'text': answer});
-      _loading = false;
-    });
+  Future<void> _addToHistory(String aiText) async {
+    final prefs = await SharedPreferences.getInstance();
+    final history = prefs.getStringList('ai_history') ?? [];
+    history.add(aiText);
+    await prefs.setStringList('ai_history', history);
   }
 
-  Widget _buildMessage(Map<String, String> msg) {
-    final isUser = msg['role'] == 'user';
-    return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isUser ? Colors.lightBlue[100] : Colors.purple[100],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isUser ? Colors.blue : Colors.purple),
-        ),
-        child: Text(msg['text'] ?? ""),
-      ),
-    );
+  Future<void> _getAIResponse(String question) async {
+    setState(() {
+      _isSending = true;
+      aiResponses.add({'role': 'user', 'text': question});
+    });
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final history = prefs.getStringList('ai_history') ?? [];
+
+      final contextText = history.join('\n');
+
+      final content = [
+        Content.text('Context anterior:\n$contextText\n\nÎntrebare: $question'),
+      ];
+
+      final response = await _model.generateContent(content);
+      final aiText = response.text ?? "Fără răspuns.";
+
+      setState(() {
+        aiResponses.add({'role': 'ai', 'text': aiText});
+      });
+
+      await _addToHistory(aiText);
+    } catch (e) {
+      setState(() {
+        aiResponses.add(
+            {'role': 'ai', 'text': 'Nu am putut obține un răspuns de la AI.'});
+      });
+    } finally {
+      setState(() {
+        _isSending = false;
+        _controller.clear();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("💬 Chat AI Educațional")),
-      body: Column(
+    final Size size = MediaQuery
+        .of(context)
+        .size;
+
+    return MainLayout(
+      selectedIndex: 1,
+      child: Column(
         children: [
+          const SizedBox(height: 10), // redus de la 50
+
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(8),
-              children: _messages.map(_buildMessage).toList(),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 20,
+                  child: Image.asset(
+                    'assets/questbot.png',
+                    width: 120,
+                    height: 120,
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 140,
+                  right: 10,
+                  bottom: 60,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 5,
+                          offset: Offset(4, 4),
+                        ),
+                      ],
+                    ),
+                    child: ListView.builder(
+                      itemCount: aiResponses.length,
+                      itemBuilder: (context, index) {
+                        final item = aiResponses[index];
+                        final isUser = item['role'] == 'user';
+                        return Align(
+                          alignment: isUser
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: isUser
+                                  ? Colors.deepPurple[100]
+                                  : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              item['text'],
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          if (_loading) const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CircularProgressIndicator(),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
+          const SizedBox(height: 10),
+          Container(
+            margin: const EdgeInsets.only(bottom: 30),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.blue, width: 2),
+            ),
             child: Row(
               children: [
+                const Icon(Icons.search, color: Colors.blue),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    onSubmitted: (value) => _getAIResponse(value),
                     decoration: const InputDecoration(
-                      labelText: "Scrie întrebarea ta...",
-                      border: OutlineInputBorder(),
+                      hintText: 'Întrebarea ta...',
+                      border: InputBorder.none,
                     ),
-                    onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _sendMessage,
+                  icon: const Icon(Icons.send, color: Colors.blue),
+                  onPressed: _isSending
+                      ? null
+                      : () => _getAIResponse(_controller.text),
                 ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-  Widget buildNavigationRail(BuildContext context) {
-    return NavigationRail(
-      selectedIndex: 2,
-      onDestinationSelected: (int index) {
-        // Logica de navigare aici
-      },
-      labelType: NavigationRailLabelType.all,
-      destinations: const [
-        NavigationRailDestination(
-          icon: Icon(Icons.home),
-          label: Text('Acasă'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.chat),
-          label: Text('Chat AI'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.bar_chart),
-          label: Text('Statistici'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.calculate),
-          label: Text('Matematică'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.public),
-          label: Text('Astronomie'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.memory),
-          label: Text('Electronică'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.info),
-          label: Text('Istoric'),
-        ),
-      ],
     );
   }
 }

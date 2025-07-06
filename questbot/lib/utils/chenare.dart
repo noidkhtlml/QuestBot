@@ -1,50 +1,48 @@
 import 'package:flutter/material.dart';
 
-class SquareBox {
-  final String id;
-  final GlobalKey key;
+class CapitolBox {
+  final int id;
+  final String titlu;
 
-  SquareBox(this.id) : key = GlobalKey();
+  CapitolBox({required this.id, required this.titlu});
 }
 
-class SquareBoxList extends StatelessWidget {
-  final int startId;
-  final int endId;
-  final void Function(String id)? onTap;
+class CapitolBoxList extends StatelessWidget {
+  final List<CapitolBox> capitole;
+  final void Function(int id) onTap;
 
-  SquareBoxList({
-    required this.startId,
-    required this.endId,
-    this.onTap,
+  const CapitolBoxList({
+    super.key,
+    required this.capitole,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final boxes = List.generate(
-      endId - startId + 1,
-          (index) => SquareBox('box_${startId + index}'),
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: capitole.map((c) => buildCard(context, c)).toList(),
     );
+  }
 
-    return ListView(
-      padding: EdgeInsets.all(16),
-      children: boxes.map((box) {
-        return GestureDetector(
-          onTap: () => onTap?.call(box.id),
-          child: Container(
-            key: box.key,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            width: 100,
-            height: 100,
-            color: Colors.blue,
-            child: Center(
-              child: Text(
-                box.id,
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+  Widget buildCard(BuildContext context, CapitolBox capitol) {
+    return InkWell(
+      onTap: () => onTap(capitol.id),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Container(
+          width: 180,
+          height: 120, // pentru ca să fie pătrate
+          alignment: Alignment.center,
+          child: Text(
+            capitol.titlu,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16),
           ),
-        );
-      }).toList(),
+        ),
+      ),
     );
   }
 }
