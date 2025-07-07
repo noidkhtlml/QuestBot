@@ -67,21 +67,33 @@ class _ChatAIPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery
-        .of(context)
-        .size;
+    final Size size = MediaQuery.of(context).size;
 
     return MainLayout(
       selectedIndex: 1,
       child: Column(
         children: [
-          const SizedBox(height: 10), // redus de la 50
-
+          const SizedBox(height: 10),
           Expanded(
             child: Stack(
               children: [
-                Positioned(
+                // Titlul "Chatbot"
+                const Positioned(
                   top: 0,
+                  left: 20,
+                  child: Text(
+                    'Chatbot',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+
+                // Imaginea questbot
+                Positioned(
+                  top: 40,
                   left: 20,
                   child: Image.asset(
                     'assets/questbot.png',
@@ -89,8 +101,10 @@ class _ChatAIPageState extends State<ChatPage> {
                     height: 120,
                   ),
                 ),
+
+                // Containerul de conversații
                 Positioned(
-                  top: 0,
+                  top: 40,
                   left: 140,
                   right: 10,
                   bottom: 60,

@@ -49,7 +49,7 @@
           {
             "subtitlu": "Ce este un obiect?",
             "paragraf": [
-              "Un obiect este o instanță a unei clase – adică un element concret creat pe baza acelui șablon. Fiecare obiect are proprietăți (numite atribute) și comportamente (numite metode).\n"
+              "Un obiect este o instanță a unei clase – adică un element concret creat pe baza acelui șablon. Fiecare obiect are proprietăți (numite atribute) și comportamente (numite metode)."
             ]
           }
         ],
@@ -57,13 +57,13 @@
           {
             "subtitlu": "Exemplu",
             "paragraf": [
-              "class Elev:\n    def __init__(self, nume, varsta):\n        self.nume = nume\n        self.varsta = varsta\n\n    def salut(self):\n        print(f\"Salut, eu sunt {self.nume} și am {self.varsta} ani.\")\n\nExplicație:\nclass Elev: – definim o clasă numită Elev.\n\n\ndef __init__(self, nume, varsta): – este constructorul clasei. Se apelează automat atunci când se creează un obiect.\n\n\nself este o referință la obiectul creat. Este obligatoriu la metodele din clasă.\n\n\nnume și varsta sunt parametri pe care îi dăm atunci când creăm un obiect nou.\n\n\nself.nume = nume – salvează valoarea primită în atributul obiectului.\n\n\ndef salut(self): – este o metodă (funcție dintr-o clasă) care folosește datele obiectului pentru a afișa un mesaj personalizat.\n\n\n"
+              "class Elev:\n    def __init__(self, nume, varsta):\n        self.nume = nume\n        self.varsta = varsta; def salut(self):; print(f\"Salut, eu sunt {self.nume} și am {self.varsta} ani.\")\n Explicație: class Elev: – definim o clasă numită Elev.; def __init__(self, nume, varsta): – este constructorul clasei. Se apelează automat atunci când se creează un obiect.; self este o referință la obiectul creat. Este obligatoriu la metodele din clasă.; nume și varsta sunt parametri pe care îi dăm atunci când creăm un obiect nou.; self.nume = nume – salvează valoarea primită în atributul obiectului.; def salut(self): – este o metodă (funcție dintr-o clasă) care folosește datele obiectului pentru a afișa un mesaj personalizat."
             ]
           },
           {
             "subtitlu": "Crearea unui obiect",
             "paragraf": [
-              "e1 = Elev(\"Ioana\", 16)\ne1.salut()\n\nExplicație:\ne1 = Elev(\"Ioana\", 16) – creează un obiect numit e1 de tipul Elev, cu numele „Ioana” și vârsta 16.\n\n\ne1.salut() – apelează metoda salut() a obiectului, afișând:\n Salut, eu sunt Ioana și am 16 ani.\n\n\nFiecare obiect are propriile valori, dar se comportă conform aceleiași clase. Aceasta este ideea centrală în programarea orientată pe obiecte (OOP)."
+              "e1 = Elev(\"Ioana\", 16)\ne1.salut(); Explicație:e1 = Elev(\"Ioana\", 16) – creează un obiect numit e1 de tipul Elev, cu numele „Ioana” și vârsta 16. e1.salut() – apelează metoda salut() a obiectului, afișând: Salut, eu sunt Ioana și am 16 ani.Fiecare obiect are propriile valori, dar se comportă conform aceleiași clase. Aceasta este ideea centrală în programarea orientată pe obiecte (OOP)."
             ]
           }
         ]
@@ -78,13 +78,13 @@
           {
             "subtitlu": "Ce este NumPy?",
             "paragraf": [
-              "NumPy este o bibliotecă Python folosită pentru operații matematice rapide pe vectori și matrici.\n"
+              "NumPy este o bibliotecă Python folosită pentru operații matematice rapide pe vectori și matrici."
             ]
           },
           {
             "subtitlu": "Ce este Pandas?",
             "paragraf": [
-              "Pandas este o bibliotecă care oferă structuri de date foarte puternice:\nSeries – liste etichetate\n\n\nDataFrame – tabele cu rânduri și coloane, ca în Excel\n"
+              "Pandas este o bibliotecă care oferă structuri de date foarte puternice:Series – liste etichetate; DataFrame – tabele cu rânduri și coloane, ca în Excel"
             ]
           },
           {
@@ -122,13 +122,13 @@
           {
             "subtitlu": "Tipuri de tabele",
             "paragraf": [
-              "plt.plot() – grafic de linie\n\n\nplt.bar() – grafic cu bare\n\n\nplt.scatter() – puncte\n\n\nplt.hist() – histogramă\n"
+              "plt.plot() – grafic de linie; plt.bar() – grafic cu bare; plt.scatter() – puncte; plt.hist() – histogramă"
             ]
           },
           {
             "subtitlu": "Exemple de instructiuni in Seaborne",
             "paragraf": [
-              "import seaborn as sns\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"gen\": [\"F\", \"M\", \"F\", \"M\", \"F\"],\n    \"vârstă\": [22, 30, 18, 25, 27]\n})\n\nsns.boxplot(x=\"gen\", y=\"vârstă\", data=df)\nplt.title(\"Distribuția vârstei pe gen\")\nplt.show()\n"
+              "import seaborn as sns, import pandas as pd, df = pd.DataFrame({\n    \"gen\": [\"F\", \"M\", \"F\", \"M\", \"F\"],\n    \"vârstă\": [22, 30, 18, 25, 27]\n})\n\nsns.boxplot(x=\"gen\", y=\"vârstă\", data=df)\nplt.title(\"Distribuția vârstei pe gen\")\nplt.show()"
             ]
           }
         ]
@@ -143,7 +143,7 @@
           {
             "subtitlu": "Ce este Machine Learning?",
             "paragraf": [
-              "Machine Learning (ML) înseamnă că un program învață automat din date, fără a fi explicit programat pentru fiecare situație.\n"
+              "Machine Learning (ML) înseamnă că un program învață automat din date, fără a fi explicit programat pentru fiecare situație."
             ]
           }
         ],
@@ -151,13 +151,13 @@
           {
             "subtitlu": "Tipuri de Machine Learning",
             "paragraf": [
-              "Supervizat – datele au etichete (ex: spam / nu spam);Nesupervizat – datele nu au etichete (ex: grupare/clustering)\n\n\nÎnvățare prin întărire – agentul învață prin recompense\n"
+              "Supervizat – datele au etichete (ex: spam / nu spam);Nesupervizat – datele nu au etichete (ex: grupare/clustering)\nÎnvățare prin întărire – agentul învață prin recompense"
             ]
           },
           {
             "subtitlu": "Workflow intr-un proiect de Machine Learning",
             "paragraf": [
-              "Colectarea datelor\n\n\nCurățarea și analiza datelor\n\n\nÎmpărțirea datelor: antrenare / testare\n\n\nAlegerea și antrenarea modelului\n\n\nEvaluarea performanței\n\n\nÎmbunătățire și aplicare\n\n\n"
+              "Colectarea datelor; Curățarea și analiza datelor; Împărțirea datelor: antrenare / testare; Alegerea și antrenarea modelului; Evaluarea performanței; Îmbunătățire și aplicare"
             ]
           }
         ]
@@ -181,13 +181,13 @@
           {
             "subtitlu": "Cum functioneaza?",
             "paragraf": [
-              "Se presupune că relația dintre variabile este aproximativ liniară, adică poate fi descrisă printr-o dreaptă (sau un plan în cazul mai multor variabile).\n\nEcuația de bază a regresiei liniare simple (cu o singură variabilă independentă) este:\n\n\uD835\uDC66\n=\n\uD835\uDC4E\n+\n\uD835\uDC4F\n⋅\n\uD835\uDC65\n+\n\uD835\uDF00\ny=a+b⋅x+ε\nUnde:\n\n\uD835\uDC66\ny este variabila dependentă (ce vrem să prezicem),\n\n\uD835\uDC65\nx este variabila independentă (predictorul),\n\n\uD835\uDC4E\na este interceptul (valoarea lui \n\uD835\uDC66\ny când \n\uD835\uDC65\n=\n0\nx=0),\n\n\uD835\uDC4F\nb este panta dreptei (arată cum se schimbă \n\uD835\uDC66\ny când \n\uD835\uDC65\nx crește cu o unitate),\n\n\uD835\uDF00\nε reprezintă eroarea (diferența dintre valorile reale și cele prezise)."
+              "Se presupune că relația dintre variabile este aproximativ liniară, adică poate fi descrisă printr-o dreaptă (sau un plan în cazul mai multor variabile).\n\nEcuația de bază a regresiei liniare simple (cu o singură variabilă independentă) este: y=a+b⋅x+ε, unde:y este variabila dependentă (ce vrem să prezicem),x este variabila independentă (predictorul),a este interceptul (valoarea lui y când x=0),b este panta dreptei (arată cum se schimbă y când x crește cu o unitate),ε reprezintă eroarea (diferența dintre valorile reale și cele prezise)."
             ]
           },
           {
             "subtitlu": "Scopul ei",
             "paragraf": [
-              "Scopul este să găsim valorile lui \n\uD835\uDC4E\na și \n\uD835\uDC4F\nb astfel încât să minimizăm diferența dintre valorile prezise de model și valorile reale din datele observate.\n O folosim:\n Pentru a prezice valori viitoare.\n\nPentru a înțelege cât de puternică este relația între variabile.\n\nPentru a vedea dacă o variabilă independentă are un impact semnificativ asupra variabilei dependente."
+              "Scopul este să găsim valorile lui a și b astfel încât să minimizăm diferența dintre valorile prezise de model și valorile reale din datele observate.\n O folosim: Pentru a prezice valori viitoare; Pentru a înțelege cât de puternică este relația între variabile; Pentru a vedea dacă o variabilă independentă are un impact semnificativ asupra variabilei dependente."
             ]
           },
           {
@@ -292,10 +292,6 @@
             ]
           },
           {
-            "subtitlu": "Cum functioneaza corect neuronul artificial?",
-            "paragraf": [
-              "Intrările (inputs):\nNeuronul primește un set de valori numerice, care reprezintă caracteristicile (features) din date sau ieșirile altor neuroni.\n\nPonderile (weights):\nFiecare intrare \n\uD835\uDC65\n\uD835\uDC56\nx \ni\n\u200B\n  este înmulțită cu un coeficient \n\uD835\uDC64\n\uD835\uDC56\nw \ni\n\u200B\n , numit ponderare sau greutate. Aceste greutăți controlează cât de importantă este fiecare intrare pentru neuron.\n\nSuma ponderată:\nSe calculează suma ponderată a tuturor intrărilor:\n\n\uD835\uDC67\n=\n∑\n\uD835\uDC56\n=\n1\n\uD835\uDC5B\n\uD835\uDC64\n\uD835\uDC56\n\uD835\uDC65\n\uD835\uDC56\n+\n\uD835\uDC4F\nz= \ni=1\n∑\nn\n\u200B\n w \ni\n\u200B\n x \ni\n\u200B\n +b\nUnde:\n\n\uD835\uDC64\n\uD835\uDC56\nw \ni\n\u200B\n  sunt greutățile,\n\n\uD835\uDC65\n\uD835\uDC56\nx \ni\n\u200B\n  sunt valorile de intrare,\n\n\uD835\uDC4F\nb este bias-ul (o constantă adăugată pentru flexibilitate).\n\nFuncția de activare:\nRezultatul sumei ponderate \n\uD835\uDC67\nz trece printr-o funcție de activare \n\uD835\uDC53\n(\n\uD835\uDC67\n)\nf(z), care introduce non-linearitate și decide ieșirea neuronului:\n\n\uD835\uDC66\n=\n\uD835\uDC53\n(\n\uD835\uDC67\n)\ny=f(z)"
-            ]
           },
           {
             "subtitlu": "Ce face Keras?",

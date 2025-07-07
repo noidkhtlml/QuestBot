@@ -17,16 +17,21 @@ class AiPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<CapitolBox> capitole = List.generate(
-      10,
-          (index) => CapitolBox(
-        id: index + 1,
-        titlu: (index + 1).toString(),
-      ),
-    );
+    final List<CapitolBox> capitole = [
+      CapitolBox(id: 1, titlu: "Introducere in astronomie si astrofizica"),
+      CapitolBox(id: 2, titlu: "Introducere in Univers"),
+      CapitolBox(id: 3, titlu: "Cosmologia"),
+      CapitolBox(id: 4, titlu: "Tehnologii moderne in astronomie"),
+      CapitolBox(id: 5, titlu: "Radiatia si lumina"),
+      CapitolBox(id: 6, titlu: "Soarele"),
+      CapitolBox(id: 7, titlu: "Imprastierea si transferul radiatiei"),
+      CapitolBox(id: 8, titlu: "Gravitatia"),
+      CapitolBox(id: 9, titlu: "Miscarea corpurilor cosmice"),
+      CapitolBox(id: 10, titlu: "Constituentii elementari ai materiei"),
+    ];
 
     return MainLayout(
-      selectedIndex: 1,
+      selectedIndex: 6,
       backgroundColor: Colors.white, // dacă MainLayout suportă asta
       child: Container(
         color: Colors.white, // fundal complet alb
@@ -37,7 +42,7 @@ class AiPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildBannerModul("Inteligență Artificială", "Explorează bazele AI și aplicațiile sale", "🤖"),
+              buildBannerModul("Inteligență Artificială", "Explorează bazele AI și aplicațiile sale"),
               const SizedBox(height: 24),
               CapitolBoxList(
                 capitole: capitole,
@@ -50,27 +55,25 @@ class AiPage extends StatelessWidget {
     );
   }
 
-  Widget buildBannerModul(String titlu, String subtitlu, String emoji) {
+  Widget buildBannerModul(String titlu, String subtitlu) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.deepPurple.shade400,
+        color: Colors.lightBlueAccent,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 48)),
-          const SizedBox(height: 8),
           Text(
             titlu,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 4),
           Text(
             subtitlu,
-            style: const TextStyle(fontSize: 16, color: Colors.white70),
+            style: const TextStyle(fontSize: 24, color: Colors.white70),
           ),
         ],
       ),

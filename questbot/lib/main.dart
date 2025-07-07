@@ -5,7 +5,7 @@ import 'package:questbot/pages/chatbot.dart';
 import 'package:questbot/pages/electronica.dart';
 import 'package:questbot/pages/home_screen.dart';
 import 'package:questbot/pages/login_page.dart';
-import 'package:questbot/pages/matematica.dart';
+import 'package:questbot/pages/neurostiinte.dart';
 import 'package:questbot/pages/signup_page.dart';
 import 'package:questbot/pages/statistici.dart';
 import 'pages/home_page.dart';

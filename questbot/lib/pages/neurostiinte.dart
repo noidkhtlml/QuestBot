@@ -3,8 +3,8 @@ import '../utils/main_layout.dart';
 import '../utils/chenare.dart';
 import '../models/Lectie.dart';
 
-class ElectronicaPage extends StatelessWidget {
-  const ElectronicaPage({super.key});
+class NeurostiintaPage extends StatelessWidget {
+  const NeurostiintaPage({super.key});
 
   void onChenarAles(BuildContext context, int id) {
     Navigator.push(
@@ -18,30 +18,28 @@ class ElectronicaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<CapitolBox> capitole = [
-      CapitolBox(id: 47, titlu: "titlu"),
-      CapitolBox(id: 48, titlu: "Galaxiile"),
-      CapitolBox(id: 49, titlu: "Miscarea corpurilor cosmice"),
-      CapitolBox(id: 50, titlu: "Constituentii elementari ai materiei"),
-      CapitolBox(id: 51, titlu: "Fenomene termodinamice in astronomie si starea materie"),
-      CapitolBox(id: 52, titlu: "Undele sonore"),
-      CapitolBox(id: 53, titlu: "Undele magnetice"),
-      CapitolBox(id: 54, titlu: "Astrofizica stelara"),
-      CapitolBox(id: 55, titlu: "Materia dintre stele"),
-      CapitolBox(id: 56, titlu: "Cum a luat nastere Sistemul Solar?"),
-      CapitolBox(id: 57, titlu: "titlu"),
-      CapitolBox(id: 58, titlu: "Galaxiile"),
-      CapitolBox(id: 59, titlu: "Miscarea corpurilor cosmice"),
-      CapitolBox(id: 60, titlu: "Constituentii elementari ai materiei"),
-      CapitolBox(id: 61, titlu: "Fenomene termodinamice in astronomie si starea materie"),
-      CapitolBox(id: 62, titlu: "Undele sonore"),
-      CapitolBox(id: 63, titlu: "Undele magnetice"),
-      CapitolBox(id: 64, titlu: "Astrofizica stelara"),
-      CapitolBox(id: 65, titlu: "Materia dintre stele"),
-      CapitolBox(id: 66, titlu: "Cum a luat nastere Sistemul Solar?"),
+      CapitolBox(id: 29, titlu: "Miscarea corpurilor cosmice"),
+      CapitolBox(id: 30, titlu: "Constituentii elementari ai materiei"),
+      CapitolBox(id: 31, titlu: "Fenomene termodinamice in astronomie si starea materie"),
+      CapitolBox(id: 32, titlu: "Undele sonore"),
+      CapitolBox(id: 33, titlu: "Undele magnetice"),
+      CapitolBox(id: 34, titlu: "Astrofizica stelara"),
+      CapitolBox(id: 35, titlu: "Materia dintre stele"),
+      CapitolBox(id: 36, titlu: "Cum a luat nastere Sistemul Solar?"),
+      CapitolBox(id: 37, titlu: "Formarea stelelor"),
+      CapitolBox(id: 38, titlu: "Galaxiile"),
+      CapitolBox(id: 39, titlu: "Miscarea corpurilor cosmice"),
+      CapitolBox(id: 40, titlu: "Constituentii elementari ai materiei"),
+      CapitolBox(id: 41, titlu: "Fenomene termodinamice in astronomie si starea materie"),
+      CapitolBox(id: 42, titlu: "Undele sonore"),
+      CapitolBox(id: 43, titlu: "Undele magnetice"),
+      CapitolBox(id: 44, titlu: "Astrofizica stelara"),
+      CapitolBox(id: 45, titlu: "Materia dintre stele"),
+      CapitolBox(id: 46, titlu: "Cum a luat nastere Sistemul Solar?"),
     ];
 
     return MainLayout(
-      selectedIndex: 5,
+      selectedIndex: 3,
       backgroundColor: Colors.white,
       child: Container(
         color: Colors.white,
@@ -52,7 +50,7 @@ class ElectronicaPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildBannerModul("Electronică", "Învață principiile circuitelor și componentelor electronice"),
+              buildBannerModul("Neuroștiință", "Explorăm creierul și mintea umană"),
               const SizedBox(height: 24),
               CapitolBoxList(
                 capitole: capitole,
@@ -70,7 +68,7 @@ class ElectronicaPage extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.teal.shade600,
+        color: Colors.orange.shade600,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

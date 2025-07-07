@@ -18,28 +18,29 @@ class AstronomiePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<CapitolBox> capitole = [
-      CapitolBox(id: 1, titlu: "Introducere in astronomie si astrofizica"),
-      CapitolBox(id: 2, titlu: "Introducere in Univers"),
-      CapitolBox(id: 3, titlu: "Cosmologia"),
-      CapitolBox(id: 4, titlu: "Tehnologii moderne in astronomie"),
-      CapitolBox(id: 5, titlu: "Radiatia si lumina"),
-      CapitolBox(id: 6, titlu: "Soarele"),
-      CapitolBox(id: 7, titlu: "Imprastierea si transferul radiatiei"),
-      CapitolBox(id: 8, titlu: "Gravitatia"),
-      CapitolBox(id: 9, titlu: "Miscarea corpurilor cosmice"),
-      CapitolBox(id: 10, titlu: "Constituentii elementari ai materiei"),
-      CapitolBox(id: 11, titlu: "Fenomene termodinamice in astronomie si starea materie"),
-      CapitolBox(id: 12, titlu: "Undele sonore"),
-      CapitolBox(id: 13, titlu: "Undele magnetice"),
-      CapitolBox(id: 14, titlu: "Astrofizica stelara"),
-      CapitolBox(id: 15, titlu: "Materia dintre stele"),
-      CapitolBox(id: 16, titlu: "Cum a luat nastere Sistemul Solar?"),
-      CapitolBox(id: 17, titlu: "Formarea stelelor"),
-      CapitolBox(id: 18, titlu: "Galaxiile")
+      CapitolBox(id: 10, titlu: "Introducere in astronomie si astrofizica"),
+      CapitolBox(id: 11, titlu: "Introducere in Univers"),
+      CapitolBox(id: 12, titlu: "Cosmologia"),
+      CapitolBox(id: 13, titlu: "Cosmologia"),
+      CapitolBox(id: 14, titlu: "Tehnologii moderne in astronomie"),
+      CapitolBox(id: 15, titlu: "Radiatia si lumina"),
+      CapitolBox(id: 16, titlu: "Soarele"),
+      CapitolBox(id: 17, titlu: "Imprastierea si transferul radiatiei"),
+      CapitolBox(id: 18, titlu: "Gravitatia"),
+      CapitolBox(id: 19, titlu: "Miscarea corpurilor cosmice"),
+      CapitolBox(id: 20, titlu: "Constituentii elementari ai materiei"),
+      CapitolBox(id: 21, titlu: "Fenomene termodinamice in astronomie si starea materie"),
+      CapitolBox(id: 22, titlu: "Undele sonore"),
+      CapitolBox(id: 23, titlu: "Undele magnetice"),
+      CapitolBox(id: 24, titlu: "Astrofizica stelara"),
+      CapitolBox(id: 25, titlu: "Materia dintre stele"),
+      CapitolBox(id: 26, titlu: "Cum a luat nastere Sistemul Solar?"),
+      CapitolBox(id: 27, titlu: "Formarea stelelor"),
+      CapitolBox(id: 28, titlu: "Galaxiile")
     ];
 
     return MainLayout(
-      selectedIndex: 1,
+      selectedIndex: 4,
       backgroundColor: Colors.white,
       child: Container(
         color: Colors.white,
@@ -50,7 +51,7 @@ class AstronomiePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildBannerModul("Astrofizică", "Descoperă misterele Universului", "🌌"),
+              buildBannerModul("Astrofizică", "Descoperă misterele Universului"),
               const SizedBox(height: 24),
               CapitolBoxList(
                 capitole: capitole,
@@ -63,7 +64,7 @@ class AstronomiePage extends StatelessWidget {
     );
   }
 
-  Widget buildBannerModul(String titlu, String subtitlu, String emoji) {
+  Widget buildBannerModul(String titlu, String subtitlu) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -74,16 +75,14 @@ class AstronomiePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 48)),
-          const SizedBox(height: 8),
           Text(
             titlu,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 4),
           Text(
             subtitlu,
-            style: const TextStyle(fontSize: 16, color: Colors.white70),
+            style: const TextStyle(fontSize: 24, color: Colors.white70),
           ),
         ],
       ),
