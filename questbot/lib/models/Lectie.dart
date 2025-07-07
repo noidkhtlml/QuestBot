@@ -3,9 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
+import '../utils/main_layout.dart';
+
 class LectiePage extends StatefulWidget {
   final String chenarId;
-
   const LectiePage({Key? key, required this.chenarId}) : super(key: key);
 
   @override
@@ -33,6 +34,37 @@ class _LectiePageState extends State<LectiePage> {
     Color(0xFFE77F67),
     Color(0xFFC44569),
   ];
+
+  // Map: index întrebare -> valoarea selectată
+  Map<int, String> selectedValues = {};
+
+  // Map: index întrebare -> corectitudine (true/false)
+  Map<int, bool> results = {};
+
+  bool testVerificat = false;
+
+  // Exemplu simplu de widget pentru subtitlu cu paragraf (poți adapta)
+  Widget buildSubtitluCuParagraf(String subtitlu, List<String> paragrafe, Color culoare) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: culoare.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(subtitlu, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: culoare)),
+          const SizedBox(height: 8),
+          ...paragrafe.map((p) => Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Text(p, style: const TextStyle(fontSize: 16)),
+          )),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -94,7 +126,9 @@ class _LectiePageState extends State<LectiePage> {
 
     if (lectieData == null) {
       return Scaffold(
-        body: Center(child: Text('⚠️ Lecția nu a fost găsită.', style: TextStyle(color: Colors.red, fontSize: 20))),
+        body: Center(
+            child: Text('⚠️ Lecția nu a fost găsită.',
+                style: TextStyle(color: Colors.red, fontSize: 20))),
       );
     }
 
@@ -112,7 +146,8 @@ class _LectiePageState extends State<LectiePage> {
         ),
         child: Text(
           lectieData['titlul'] ?? '',
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           textAlign: TextAlign.center,
         ),
       ),
@@ -121,123 +156,177 @@ class _LectiePageState extends State<LectiePage> {
 
     // Conținut
     for (var item in lectieData['continut'] ?? []) {
-      // Definiții
-      for (var definitie in item['definitie'] ?? []) {
-        Color culoare = colorPalette[Random().nextInt(colorPalette.length)];
-        continutControls.add(Text(
-          definitie['subtitlu'] ?? '',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: culoare),
-        ));
-        for (var paragraf in definitie['paragraf'] ?? []) {
-          continutControls.add(Text(paragraf, style: TextStyle(fontSize: 16)));
-        }
-      }
-
-      // Teorie
+      // DEFINITIE
       for (var definitie in item['definitie'] ?? []) {
         Color culoare = colorPalette[Random().nextInt(colorPalette.length)];
         String subtitlu = definitie['subtitlu'] ?? '';
         List<String> paragrafe = List<String>.from(definitie['paragraf'] ?? []);
-        continutControls.add(buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
-      }
-
-
-      // Formule
-      for (var bloc in item['teorie'] ?? []) {
-        String subtitlu = bloc['subtitlu'] ?? '';
-        List<String> paragrafe = List<String>.from(bloc['paragraf'] ?? []);
         if (subtitlu.isNotEmpty && paragrafe.isNotEmpty) {
-          Color culoare = colorPalette[Random().nextInt(colorPalette.length)];
-          continutControls.add(buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
+          continutControls.add(
+              buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
         }
       }
 
+      // TEORIE
+      for (var teorie in item['teorie'] ?? []) {
+        Color culoare = colorPalette[Random().nextInt(colorPalette.length)];
+        String subtitlu = teorie['subtitlu'] ?? '';
+        List<String> paragrafe = List<String>.from(teorie['paragraf'] ?? []);
+        if (subtitlu.isNotEmpty && paragrafe.isNotEmpty) {
+          continutControls.add(
+              buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
+        }
+      }
 
-      // Tabel
+      // TABEL (opțional)
       var tabel = item['tabel'];
       if (tabel != null) {
-        continutControls.add(Text("📊 Tabel: $tabel",
-            style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.blue)));
+        continutControls.add(
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: 12, bottom: 24),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.blueGrey, width: 1),
+            ),
+            child: Text("Tabel: $tabel", style: TextStyle(
+                fontSize: 16, fontStyle: FontStyle.italic, color: Colors.blue)),
+          ),
+        );
       }
     }
 
-    // Test interactiv
     List<Widget> testControls = [];
-    if (testData != null) {
-      String intrebare = testData['intrebare'] ?? '';
-      List<dynamic> variante = testData['variante'] ?? [];
 
-      testControls = [
-        Divider(height: 30),
-        Text("📝 Test interactiv:", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue[800])),
-        Text(intrebare, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        ...variante.map((opt) => RadioListTile<String>(
-          title: Text(opt),
-          value: opt,
-          groupValue: selectedValue,
-          onChanged: (val) {
+    if (testData != null && testData['intrebari'] != null) {
+      List<dynamic> intrebari = testData['intrebari'];
+
+      testControls.addAll([
+        const Divider(height: 30),
+        Text("Test interactiv:",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue)),
+      ]);
+
+      for (int i = 0; i < intrebari.length; i++) {
+        final intrebare = intrebari[i];
+        final intrebareText = intrebare['question'] ?? '';
+        final optiuni = List<String>.from(intrebare['options'] ?? []);
+        final raspunsIndex = intrebare['answer'];
+        final explicatie = intrebare['explanation'] ?? '';
+
+        testControls.add(
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              border: Border.all(color: Colors.blueGrey),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Întrebarea ${i + 1}: $intrebareText",
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ...List.generate(optiuni.length, (j) {
+                  String val = "$i-$j";
+                  return RadioListTile<String>(
+                    title: Text(optiuni[j]),
+                    value: val,
+                    groupValue: selectedValues[i],
+                    onChanged: (val) {
+                      if (!testVerificat) {
+                        setState(() {
+                          selectedValues[i] = val!;
+                        });
+                      }
+                    },
+                  );
+                }),
+
+                // Feedback după verificare
+                if (testVerificat && results.containsKey(i))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(
+                      results[i]! ? "✅ Corect! $explicatie" : "❌ Greșit! $explicatie",
+                      style: TextStyle(
+                        color: results[i]! ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      }
+      testControls.add(
+        ElevatedButton(
+          onPressed: () {
+            int tempScor = 0;
+            Map<int, bool> tempResults = {};
+
+            for (int i = 0; i < intrebari.length; i++) {
+              final raspunsIndex = intrebari[i]['answer'];
+              final selVal = selectedValues[i];
+              if (selVal != null) {
+                final selectedParts = selVal.split("-");
+                if (selectedParts.length == 2 && selectedParts[0] == "$i") {
+                  final indexSelectat = int.parse(selectedParts[1]);
+                  bool corect = indexSelectat == raspunsIndex;
+                  tempResults[i] = corect;
+                  if (corect) tempScor++;
+                } else {
+                  tempResults[i] = false;
+                }
+              } else {
+                tempResults[i] = false;
+              }
+            }
+
             setState(() {
-              selectedValue = val;
+              results = tempResults;
+              scor = tempScor;
+              testVerificat = true;
             });
           },
-        )),
-        ElevatedButton(onPressed: verificaRaspuns, child: Text("✅ Verifică răspunsul")),
-        if (rezultatText.isNotEmpty) Text(rezultatText, style: TextStyle(color: rezultatColor, fontSize: 16)),
-        Text("Scor: $scor", style: TextStyle(fontSize: 16)),
-      ];
+          child: const Text("Rezolvă testul"),
+        ),
+      );
+
+      // Afișare scor total
+      if (testVerificat) {
+        testControls.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(
+              "Scor total: $scor / ${intrebari.length}",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      }
     }
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...continutControls,
-            ...testControls,
-          ],
-        ),
-      ),
-      backgroundColor: Color(0xFFFDFDFD),
-    );
-  }
-
-  Widget buildSubtitluCuParagraf(String subtitlu, List<String> paragrafe, Color culoare) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: culoare,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Text(
-            subtitlu,
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 20),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF6F6F6),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.black, width: 1),
-          ),
+    return MainLayout(
+      selectedIndex: 6,
+      child: Container(
+        color: Colors.white,  // fundal alb pentru tot conținutul
+        child: SingleChildScrollView(   // ca să poți da scroll dacă e conținut mai mult
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: paragrafe
-                .map((p) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(p, style: const TextStyle(fontSize: 16)),
-            ))
-                .toList(),
+            children: [
+              ...continutControls,
+              ...testControls,
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
