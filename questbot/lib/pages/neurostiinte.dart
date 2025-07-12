@@ -18,24 +18,25 @@ class NeurostiintaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<CapitolBox> capitole = [
-      CapitolBox(id: 29, titlu: "Miscarea corpurilor cosmice"),
-      CapitolBox(id: 30, titlu: "Constituentii elementari ai materiei"),
-      CapitolBox(id: 31, titlu: "Fenomene termodinamice in astronomie si starea materie"),
-      CapitolBox(id: 32, titlu: "Undele sonore"),
-      CapitolBox(id: 33, titlu: "Undele magnetice"),
-      CapitolBox(id: 34, titlu: "Astrofizica stelara"),
-      CapitolBox(id: 35, titlu: "Materia dintre stele"),
-      CapitolBox(id: 36, titlu: "Cum a luat nastere Sistemul Solar?"),
-      CapitolBox(id: 37, titlu: "Formarea stelelor"),
-      CapitolBox(id: 38, titlu: "Galaxiile"),
-      CapitolBox(id: 39, titlu: "Miscarea corpurilor cosmice"),
-      CapitolBox(id: 40, titlu: "Constituentii elementari ai materiei"),
-      CapitolBox(id: 41, titlu: "Fenomene termodinamice in astronomie si starea materie"),
-      CapitolBox(id: 42, titlu: "Undele sonore"),
-      CapitolBox(id: 43, titlu: "Undele magnetice"),
-      CapitolBox(id: 44, titlu: "Astrofizica stelara"),
-      CapitolBox(id: 45, titlu: "Materia dintre stele"),
-      CapitolBox(id: 46, titlu: "Cum a luat nastere Sistemul Solar?"),
+      CapitolBox(id: 28, titlu: "Introducere in neurostiinte"),
+      CapitolBox(id: 29, titlu: "Principii moleculare si celulare ale sistemului nervos"),
+      CapitolBox(id: 30, titlu: "Neuronii, unitati structural-functionale"),
+      CapitolBox(id: 31, titlu: "Celulele gliale"),
+      CapitolBox(id: 32, titlu: "Tesutul nervos"),
+      CapitolBox(id: 33, titlu: "Organizarea subcelulara si functiile organitelor neuronale"),
+      CapitolBox(id: 34, titlu: "Electrofiziologie: potențial de repaus și potențial de acțiune"),
+      CapitolBox(id: 35, titlu: "Organizarea sistemului nervos"),
+      CapitolBox(id: 36, titlu: "Transmiterea sinaptica"),
+      CapitolBox(id: 37, titlu: "Lichidul cefalorahidian si microclimatul neuronal"),
+      CapitolBox(id: 38, titlu: "Fiziologia creierului"),
+      CapitolBox(id: 39, titlu: "Circuitele neuronale in sistemul nervos central"),
+      CapitolBox(id: 40, titlu: "Neuroplasticitate si invatare"),
+      CapitolBox(id: 41, titlu: "Neurodezvoltarea"),
+      CapitolBox(id: 42, titlu: "Fiziologia sistemului senzorial"),
+      CapitolBox(id: 43, titlu: "Fiziologia sistemului motor"),
+      CapitolBox(id: 44, titlu: "Fiziologia creierului in stari patologice"),
+      CapitolBox(id: 45, titlu: "Fiziologia imbatranirii"),
+      CapitolBox(id: 46, titlu: "Tipuri de neurotransmitatori si receptori")
     ];
 
     return MainLayout(

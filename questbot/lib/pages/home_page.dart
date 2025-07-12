@@ -2,81 +2,160 @@ import 'package:flutter/material.dart';
 import '../utils/route_change.dart';
 import '../utils/main_layout.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<_SubjectData> subjects = const [
-      _SubjectData('Matematică', Icons.calculate, '/neuro'),
-      _SubjectData('Astronomie', Icons.public, '/astro'),
-      _SubjectData('Electronică', Icons.memory, '/electronica'),
-      _SubjectData('AI', Icons.hub, '/ai'),
-      _SubjectData('Statistici', Icons.bar_chart, '/statistici'),
-      _SubjectData('Chat Bot', Icons.chat, '/chatbot'),
-    ];
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  String selectedSubject = 'MATERII';
+
+  @override
+  Widget build(BuildContext context) {
     return MainLayout(
       selectedIndex: 0,
       child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        backgroundColor: const Color(0xFF33B9FF),
+        body: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'questbot',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              // QUESTBOT label sus
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, top: 10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF3399),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: RichText(
+                    text: const TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'QUEST',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'BOT',
+                          style: TextStyle(
+                            color: Color(0xFFCCFF66),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Ce vrei să înveți azi?',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: subjects.map((subject) {
-                  return GestureDetector(
-                    onTap: () => routeChangeNamed(context, subject.route),
-                    child: Chip(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(subject.icon, size: 20, color: Colors.black87),
-                          const SizedBox(width: 6),
-                          Text(subject.title, style: const TextStyle(color: Colors.black87)),
-                        ],
-                      ),
-                      backgroundColor: Colors.grey.shade200,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+
+              const SizedBox(height: 16),
+
+              // CARD CENTRAL
+              Expanded(
+                child: Center(
+                  child: Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                        width: 6,
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 40),
-              const TextField(
-                decoration: InputDecoration(
-                  hintText: 'Scrie aici idei, gânduri, notițe...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Ce face questbot',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Dropdown "MATERII"
+                        Container(
+                          height: 60,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF8C4BFF),
+                            borderRadius: BorderRadius.circular(2),
+                            border: Border.all(color: const Color(0xFF651FFF), width: 3),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: selectedSubject,
+                              icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                              dropdownColor: const Color(0xFF8C4BFF),
+                              isExpanded: true,
+                              items: <String>['MATERII', 'Matematică', 'Fizică', 'AI', 'Statistici']
+                                  .map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedSubject = newValue!;
+                                });
+
+                                // Navigare bazată pe selecție
+                                final routes = {
+                                  'Matematică': '/neuro',
+                                  'AI': '/ai',
+                                  'Fizică': '/astro',
+                                  'Statistici': '/statistici',
+                                };
+                                if (routes.containsKey(newValue)) {
+                                  routeChangeNamed(context, routes[newValue]!);
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // yappa
+                        const Text('yappa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        const Text('yappa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        const Text('yappa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+
+                        const SizedBox(height: 30),
+
+                        const Text(
+                          'Ce face',
+                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                        ),
+
+                        const SizedBox(height: 16),
+                        const Text('mai mult yappa',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        const Text('yappa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      ],
+                    ),
                   ),
-                  filled: true,
-                  fillColor: Color(0xFFF5F5F5),
                 ),
-                maxLines: 5,
               ),
             ],
           ),
@@ -84,12 +163,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-}
-
-class _SubjectData {
-  final String title;
-  final IconData icon;
-  final String route;
-
-  const _SubjectData(this.title, this.icon, this.route);
 }
