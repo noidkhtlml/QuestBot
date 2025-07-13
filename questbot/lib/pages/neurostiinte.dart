@@ -51,7 +51,7 @@ class NeurostiintaPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildBannerModul("Neuroștiință", "Explorăm creierul și mintea umană"),
+              buildBannerModul("Neuroștiință", "Explorăm creierul și mintea umană", "bla bla descriere"),
               const SizedBox(height: 24),
               CapitolBoxList(
                 capitole: capitole,
@@ -64,7 +64,7 @@ class NeurostiintaPage extends StatelessWidget {
     );
   }
 
-  Widget buildBannerModul(String titlu, String subtitlu) {
+  Widget buildBannerModul(String titlu, String subtitlu, String descriere) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -83,6 +83,10 @@ class NeurostiintaPage extends StatelessWidget {
           Text(
             subtitlu,
             style: const TextStyle(fontSize: 24, color: Colors.white70),
+          ),
+          Text(
+            descriere,
+            style: const TextStyle(fontSize: 18, color: Colors.white70),
           ),
         ],
       ),

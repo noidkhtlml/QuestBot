@@ -42,7 +42,7 @@ class AiPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildBannerModul("Inteligență Artificială", "Explorează bazele AI și aplicațiile sale"),
+              buildBannerModul("Inteligență Artificială", "Explorează bazele AI și aplicațiile sale", "descriere"),
               const SizedBox(height: 24),
               CapitolBoxList(
                 capitole: capitole,
@@ -55,7 +55,7 @@ class AiPage extends StatelessWidget {
     );
   }
 
-  Widget buildBannerModul(String titlu, String subtitlu) {
+  Widget buildBannerModul(String titlu, String subtitlu, String descriere) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -74,6 +74,10 @@ class AiPage extends StatelessWidget {
           Text(
             subtitlu,
             style: const TextStyle(fontSize: 24, color: Colors.white70),
+          ),
+          Text(
+            descriere,
+            style: const TextStyle(fontSize: 18, color: Colors.white70),
           ),
         ],
       ),

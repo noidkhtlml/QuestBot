@@ -31,10 +31,13 @@ class CapitolBoxList extends StatelessWidget {
       onTap: () => onTap(capitol.id),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: Colors.grey[300]!, width: 1), // Bordură adăugată aici
+        ),
         child: Container(
           width: 180,
-          height: 120, // pentru ca să fie pătrate
+          height: 120,
           alignment: Alignment.center,
           child: Text(
             capitol.titlu,
@@ -45,4 +48,5 @@ class CapitolBoxList extends StatelessWidget {
       ),
     );
   }
+
 }

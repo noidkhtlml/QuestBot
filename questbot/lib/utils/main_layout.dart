@@ -64,7 +64,7 @@ class MainLayout extends StatelessWidget {
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.calculate),
-                label: Text('Matematică'),
+                label: Text('Neuroștiințe'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.public),
