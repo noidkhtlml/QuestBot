@@ -14,8 +14,9 @@ import 'pages/home_page.dart';
 
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const QuestBotApp());
 }
@@ -31,7 +32,7 @@ class QuestBotApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFFF8A9A),
       ),
-      initialRoute: '/home',
+      initialRoute: '/screen',
       routes: {
         '/screen': (context) => const HomeScreen(),
         '/home': (context) => const HomePage(),

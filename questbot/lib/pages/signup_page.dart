@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -12,22 +14,33 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Simulăm o bază de date locală temporară
-  static final List<Map<String, String>> _fakeUsers = [];
 
-  void _signUp() {
-    final String userId = _userIdController.text.trim();
+  Future<void> _signUp() async {
+    final String userId = _userIdController.text.trim(); // Opțional
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
 
-    final alreadyExists = _fakeUsers.any((user) => user['email'] == email);
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      Navigator.pushReplacementNamed(context, '/home');
 
-    if (alreadyExists) {
+    } on FirebaseAuthException catch (e) {
+      String message = 'A apărut o eroare.';
+
+      if (e.code == 'email-already-in-use') {
+        message = 'Există deja un cont cu acest email.';
+      } else if (e.code == 'weak-password') {
+        message = 'Parola este prea slabă. Alege una mai puternică.';
+      }
+
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
           title: const Text('Eroare'),
-          content: const Text('Există deja un cont cu acest email.'),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -36,32 +49,9 @@ class _SignupPageState extends State<SignupPage> {
           ],
         ),
       );
-      return;
     }
-
-    _fakeUsers.add({
-      'userId': userId,
-      'email': email,
-      'password': password,
-    });
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Cont creat'),
-        content: const Text('Contul a fost creat cu succes.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // închide dialogul
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +69,7 @@ class _SignupPageState extends State<SignupPage> {
             TextField(
               controller: _userIdController,
               decoration: const InputDecoration(
-                labelText: 'User ID',
+                labelText: 'Username',
                 filled: true,
                 fillColor: Colors.white,
               ),

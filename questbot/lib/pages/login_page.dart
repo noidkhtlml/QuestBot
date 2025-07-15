@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,23 +13,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Dummy credentials (poți înlocui cu sistem local real)
-  final String _dummyEmail = 'test@example.com';
-  final String _dummyPassword = '123456';
 
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email == _dummyEmail && password == _dummyPassword) {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/home');
-    } else {
+    } on FirebaseAuthException catch (e) {
+      String message = 'A apărut o eroare.';
+      if (e.code == 'user-not-found') {
+        message = 'Utilizatorul nu a fost găsit.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Parolă incorectă.';
+      }
+
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
           title: const Text('Login eșuat'),
-          content: const Text('Email sau parolă incorectă.'),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -38,6 +49,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
