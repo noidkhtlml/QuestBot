@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
   fl_chart: ^1.0.0
 # pentru baza de date:
-
+  firebase_core: ^3.6.0
 
 # pentru ai:
   http: ^1.4.0

@@ -18,16 +18,14 @@ class AiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<CapitolBox> capitole = [
-      CapitolBox(id: 1, titlu: "Introducere in astronomie si astrofizica"),
-      CapitolBox(id: 2, titlu: "Introducere in Univers"),
-      CapitolBox(id: 3, titlu: "Cosmologia"),
-      CapitolBox(id: 4, titlu: "Tehnologii moderne in astronomie"),
-      CapitolBox(id: 5, titlu: "Radiatia si lumina"),
-      CapitolBox(id: 6, titlu: "Soarele"),
-      CapitolBox(id: 7, titlu: "Imprastierea si transferul radiatiei"),
-      CapitolBox(id: 8, titlu: "Gravitatia"),
-      CapitolBox(id: 9, titlu: "Miscarea corpurilor cosmice"),
-      CapitolBox(id: 10, titlu: "Constituentii elementari ai materiei"),
+      CapitolBox(id: 1, titlu: "1.Sintaxa de baza Python"),
+      CapitolBox(id: 2, titlu: "2.Clase si obiecte"),
+      CapitolBox(id: 3, titlu: "3.Lucrul cu date"),
+      CapitolBox(id: 4, titlu: "4.Introducere in Machine Learning"),
+      CapitolBox(id: 5, titlu: "5.Regresia liniara"),
+      CapitolBox(id: 6, titlu: "6.Arbori de decizie si Paduri aleatorii"),
+      CapitolBox(id: 7, titlu: "7.Deeplearning cu TensorFlow/Keras"),
+      CapitolBox(id: 8, titlu: "8.Computer Vision")
     ];
 
     return MainLayout(
@@ -42,7 +40,7 @@ class AiPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildBannerModul("Inteligență Artificială", "Explorează bazele AI și aplicațiile sale", "descriere"),
+              buildBannerModul("Inteligență Artificială", "Explorează bazele AI și aplicațiile sale"),
               const SizedBox(height: 24),
               CapitolBoxList(
                 capitole: capitole,
@@ -55,7 +53,7 @@ class AiPage extends StatelessWidget {
     );
   }
 
-  Widget buildBannerModul(String titlu, String subtitlu, String descriere) {
+  Widget buildBannerModul(String titlu, String subtitlu) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -74,10 +72,6 @@ class AiPage extends StatelessWidget {
           Text(
             subtitlu,
             style: const TextStyle(fontSize: 24, color: Colors.white70),
-          ),
-          Text(
-            descriere,
-            style: const TextStyle(fontSize: 18, color: Colors.white70),
           ),
         ],
       ),

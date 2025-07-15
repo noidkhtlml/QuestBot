@@ -18,24 +18,24 @@ class AstronomiePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<CapitolBox> capitole = [
-      CapitolBox(id: 10, titlu: "Introducere in astronomie si astrofizica"),
-      CapitolBox(id: 11, titlu: "Introducere in Univers"),
-      CapitolBox(id: 12, titlu: "Cosmologia"),
-      CapitolBox(id: 13, titlu: "Tehnologii moderne in astronomie"),
-      CapitolBox(id: 14, titlu: "Radiatia si lumina"),
-      CapitolBox(id: 15, titlu: "Soarele"),
-      CapitolBox(id: 16, titlu: "Imprastierea si transferul radiatiei"),
-      CapitolBox(id: 17, titlu: "Gravitatia"),
-      CapitolBox(id: 18, titlu: "Miscarea corpurilor cosmice"),
-      CapitolBox(id: 19, titlu: "Constituentii elementari ai materiei"),
-      CapitolBox(id: 20, titlu: "Fenomene termodinamice in astronomie si starea materie"),
-      CapitolBox(id: 21, titlu: "Undele sonore"),
-      CapitolBox(id: 22, titlu: "Undele magnetice"),
-      CapitolBox(id: 23, titlu: "Astrofizica stelara"),
-      CapitolBox(id: 24, titlu: "Materia dintre stele"),
-      CapitolBox(id: 25, titlu: "Cum a luat nastere Sistemul Solar?"),
-      CapitolBox(id: 26, titlu: "Formarea stelelor"),
-      CapitolBox(id: 27, titlu: "Galaxiile")
+      CapitolBox(id: 10, titlu: "1.Introducere in astronomie si astrofizica"),
+      CapitolBox(id: 11, titlu: "2.Introducere in Univers"),
+      CapitolBox(id: 12, titlu: "3.Cosmologia"),
+      CapitolBox(id: 13, titlu: "4.Tehnologii moderne in astronomie"),
+      CapitolBox(id: 14, titlu: "5.Radiatia si lumina"),
+      CapitolBox(id: 15, titlu: "6.Soarele"),
+      CapitolBox(id: 16, titlu: "7.Imprastierea si transferul radiatiei"),
+      CapitolBox(id: 17, titlu: "8.Gravitatia"),
+      CapitolBox(id: 18, titlu: "9.Miscarea corpurilor cosmice"),
+      CapitolBox(id: 19, titlu: "10.Constituentii elementari ai materiei"),
+      CapitolBox(id: 20, titlu: "11.Fenomene termodinamice in astronomie si starea materie"),
+      CapitolBox(id: 21, titlu: "12.Undele sonore"),
+      CapitolBox(id: 22, titlu: "13.Undele magnetice"),
+      CapitolBox(id: 23, titlu: "14.Astrofizica stelara"),
+      CapitolBox(id: 24, titlu: "15.Materia dintre stele"),
+      CapitolBox(id: 25, titlu: "16.Cum a luat nastere Sistemul Solar?"),
+      CapitolBox(id: 26, titlu: "17.Formarea stelelor"),
+      CapitolBox(id: 27, titlu: "18.Galaxiile")
     ];
 
     return MainLayout(
@@ -50,7 +50,7 @@ class AstronomiePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildBannerModul("Astrofizică", "Descoperă misterele Universului", "descriere"),
+              buildBannerModul("Astrofizică", "Descoperă misterele Universului"),
               const SizedBox(height: 24),
               CapitolBoxList(
                 capitole: capitole,
@@ -63,7 +63,7 @@ class AstronomiePage extends StatelessWidget {
     );
   }
 
-  Widget buildBannerModul(String titlu, String subtitlu, String descriere) {
+  Widget buildBannerModul(String titlu, String subtitlu) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -82,10 +82,6 @@ class AstronomiePage extends StatelessWidget {
           Text(
             subtitlu,
             style: const TextStyle(fontSize: 24, color: Colors.white70),
-          ),
-          Text(
-            descriere,
-            style: const TextStyle(fontSize: 18, color: Colors.white70),
           ),
         ],
       ),

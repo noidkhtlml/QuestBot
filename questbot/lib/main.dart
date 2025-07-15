@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:questbot/pages/ai.dart';
 import 'package:questbot/pages/astronomie.dart';
 import 'package:questbot/pages/chatbot.dart';
@@ -8,9 +9,14 @@ import 'package:questbot/pages/login_page.dart';
 import 'package:questbot/pages/neurostiinte.dart';
 import 'package:questbot/pages/signup_page.dart';
 import 'package:questbot/pages/statistici.dart';
+import 'firebase_options.dart';
 import 'pages/home_page.dart';
 
-void main() {
+
+void main() async {
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const QuestBotApp());
 }
 
@@ -36,7 +42,7 @@ class QuestBotApp extends StatelessWidget {
         '/electronica': (context) => const ElectronicaPage(),
         '/astro': (context) => const AstronomiePage(),
         '/neuro': (context) => const NeurostiintaPage(),
-        '/statistici': (context) => const StatisticiPage(),
+        '/statistici': (context) => StatisticiPage(),
       },
     );
   }

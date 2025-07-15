@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-
 import '../utils/main_layout.dart';
 
 class LectiePage extends StatefulWidget {
@@ -314,7 +313,7 @@ class _LectiePageState extends State<LectiePage> {
     }
 
     return MainLayout(
-      selectedIndex: 6,
+      selectedIndex: 0,
       child: Container(
         color: Colors.white,  // fundal alb pentru tot conținutul
         child: SingleChildScrollView(   // ca să poți da scroll dacă e conținut mai mult

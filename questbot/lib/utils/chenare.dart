@@ -33,10 +33,10 @@ class CapitolBoxList extends StatelessWidget {
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: Colors.grey[300]!, width: 1), // Bordură adăugată aici
+          side: BorderSide(color: Colors.grey[400]!, width: 2),
         ),
         child: Container(
-          width: 180,
+          width: 210,
           height: 120,
           alignment: Alignment.center,
           child: Text(
