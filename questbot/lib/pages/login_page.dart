@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Login eșuat'),
+          title: const Text('Logare eșuată'),
           content: Text(message),
           actions: [
             TextButton(
@@ -54,25 +54,37 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text("Logare"),
+        backgroundColor: Colors.pinkAccent,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(30),
         child: Column(
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                filled: true,
+                fillColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Parolă'),
+              decoration: const InputDecoration(
+                labelText: 'Parolă',
+                filled: true,
+                fillColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
-              child: const Text('Login'),
+              child: const Text('Logare'),
             ),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/signup'),

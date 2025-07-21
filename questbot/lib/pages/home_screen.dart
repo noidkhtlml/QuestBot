@@ -16,17 +16,17 @@ class HomeScreen extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     color: Color(0xFFD439A0),
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(80),
                     border: Border.all(color: Colors.white, width: 7),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 130, vertical: 10),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
                       Text(
                         "QUEST",
                         style: TextStyle(
-                          fontSize: 50,
+                          fontSize: 100,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         "BOT",
                         style: TextStyle(
-                          fontSize: 50,
+                          fontSize: 100,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFFB8FF41),
                         ),
@@ -51,9 +51,10 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     elevation: 10,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                   ),
                   onPressed: () => Navigator.pushNamed(context, '/signup'),
-                  child: const Text("SIGN UP"),
+                  child: const Text("Înregistrare", style: TextStyle(fontSize: 20)),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
@@ -64,9 +65,10 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     elevation: 10,
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                   ),
                   onPressed: () => Navigator.pushNamed(context, '/login'),
-                  child: const Text("LOGIN"),
+                  child: const Text("Logare", style: TextStyle(fontSize: 20)),
                 ),
               ],
             ),
@@ -95,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               child: const Text(
-                "LET'S LEARN\nTOGETHER!",
+                "HAI SĂ ÎNVĂȚĂM\n    ÎMPREUNĂ!",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),

@@ -29,7 +29,6 @@ class _SignupPageState extends State<SignupPage> {
 
     } on FirebaseAuthException catch (e) {
       String message = 'A apărut o eroare.';
-
       if (e.code == 'email-already-in-use') {
         message = 'Există deja un cont cu acest email.';
       } else if (e.code == 'weak-password') {
@@ -57,7 +56,7 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Sign Up"),
+        title: const Text("Înregistrare"),
         backgroundColor: Colors.pinkAccent,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -69,7 +68,7 @@ class _SignupPageState extends State<SignupPage> {
             TextField(
               controller: _userIdController,
               decoration: const InputDecoration(
-                labelText: 'Username',
+                labelText: 'Nume de utilizator',
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -88,7 +87,7 @@ class _SignupPageState extends State<SignupPage> {
               controller: _passwordController,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Password',
+                labelText: 'Parolă',
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -96,11 +95,11 @@ class _SignupPageState extends State<SignupPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _signUp,
-              child: const Text('Sign Up'),
+              child: const Text('Înregistrare'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("← Înapoi"),
+              child: const Text("Înapoi"),
             )
           ],
         ),

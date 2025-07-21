@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../utils/main_layout.dart';
 import '../utils/chenare.dart';
 import '../models/Lectie.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 class NeurostiintaPage extends StatelessWidget {
   const NeurostiintaPage({super.key});
@@ -75,11 +77,27 @@ class NeurostiintaPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            titlu,
-            style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  titlu,
+                  style: const TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const FaIcon(
+                FontAwesomeIcons.brain,
+                size: 80,
+                color: Colors.white,
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 15),
           Text(
             subtitlu,
             style: const TextStyle(fontSize: 24, color: Colors.white70),
@@ -89,3 +107,4 @@ class NeurostiintaPage extends StatelessWidget {
     );
   }
 }
+
