@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "818268764760",
+    "firebase_url": "https://questbot-database-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "questbot-database",
+    "storage_bucket": "questbot-database.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818268764760:android:af40fc093c0ffe1749a82d",
+        "android_client_info": {
+          "package_name": "com.example.questbot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoy6TPJQVt6uo1Ya5R-Fj3DTxpYCzpmbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
