@@ -5,16 +5,15 @@ import 'package:http/http.dart' as http;
 
 import '../utils/main_layout.dart';
 
-class StatisticiPage extends StatefulWidget {
-  const StatisticiPage({super.key});
+class ParinteUiPage extends StatefulWidget {
+  const ParinteUiPage({super.key});
 
   @override
-  State<StatisticiPage> createState() => _StatisticiPageState();
+  State<ParinteUiPage> createState() => _ParinteUiPageState();
 }
 
-class _StatisticiPageState extends State<StatisticiPage> {
+class _ParinteUiPageState extends State<ParinteUiPage> {
   final borderColor = const Color(0xFFADCFFF);
-  final backgroundColor = const Color(0xFFFAFAFC);
   final headerColor = const Color(0xFFFF98A2);
   final List<Color> chartColors = [
     Colors.redAccent,
@@ -47,8 +46,8 @@ class _StatisticiPageState extends State<StatisticiPage> {
       final data = jsonDecode(response.body);
       final fields = data['fields'];
 
-      // Exemplu: {"neuro": {timp: 30, scor: 80}, "ai": {...}}
-      final Map<String, dynamic> statistici = fields.map((k, v) => MapEntry(k, v['mapValue']['fields']));
+      final Map<String, dynamic> statistici =
+      fields.map((k, v) => MapEntry(k, v['mapValue']['fields']));
 
       List<_TimpData> timpList = [];
       List<_TestData> testList = [];
@@ -59,9 +58,19 @@ class _StatisticiPageState extends State<StatisticiPage> {
         final scor = int.parse(detalii['scor']['integerValue']);
         final capitol = detalii['capitol']['stringValue'];
 
+        final scoruriList =
+            (detalii['scoruri']?['arrayValue']?['values'] as List?) ?? [];
+
+        List<_ScoreEntry> scoruri = scoruriList.map((entry) {
+          final map = entry['mapValue']['fields'];
+          final dateStr = map['timestamp']['stringValue'];
+          final score = int.parse(map['value']['integerValue']);
+          return _ScoreEntry(DateTime.parse(dateStr), score);
+        }).toList();
+
         timpList.add(_TimpData(materie, timp));
         testList.add(_TestData(capitol, scor));
-        capitolList.add(_CapitolStats(materie, capitol, timp, scor));
+        capitolList.add(_CapitolStats(materie, capitol, timp, scor, scoruri));
       });
 
       setState(() {
@@ -220,12 +229,7 @@ class _StatisticiPageState extends State<StatisticiPage> {
         itemCount: capitolStats.length,
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (context, index) {
-          final item = capitolStats[index];
-          return ListTile(
-            leading: const Icon(Icons.bar_chart, color: Colors.pinkAccent),
-            title: Text('${item.materie} - ${item.capitol}'),
-            subtitle: Text('Timp: ${item.timp} min, Scor: ${item.scor}%'),
-          );
+          return ExpandableTileWithGraph(data: capitolStats[index]);
         },
       ),
     );
@@ -257,5 +261,79 @@ class _CapitolStats {
   final String capitol;
   final int timp;
   final int scor;
-  _CapitolStats(this.materie, this.capitol, this.timp, this.scor);
+  final List<_ScoreEntry> scoruri;
+  _CapitolStats(this.materie, this.capitol, this.timp, this.scor, this.scoruri);
+}
+
+class _ScoreEntry {
+  final DateTime timestamp;
+  final int value;
+  _ScoreEntry(this.timestamp, this.value);
+}
+
+class ExpandableTileWithGraph extends StatefulWidget {
+  final _CapitolStats data;
+  const ExpandableTileWithGraph({required this.data, super.key});
+
+  @override
+  State<ExpandableTileWithGraph> createState() => _ExpandableTileWithGraphState();
+}
+
+class _ExpandableTileWithGraphState extends State<ExpandableTileWithGraph> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.bar_chart, color: Colors.pinkAccent),
+          title: Text('${widget.data.materie} - ${widget.data.capitol}'),
+          subtitle: Text('Timp: ${widget.data.timp} min, Scor: ${widget.data.scor}%'),
+          trailing: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+          onTap: () => setState(() => _expanded = !_expanded),
+        ),
+        if (_expanded && widget.data.scoruri.isNotEmpty)
+          Container(
+            height: 200,
+            padding: const EdgeInsets.all(12),
+            child: LineChart(
+              LineChartData(
+                titlesData: FlTitlesData(
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, _) {
+                        final index = value.toInt();
+                        if (index >= 0 && index < widget.data.scoruri.length) {
+                          final date = widget.data.scoruri[index].timestamp;
+                          return Text('${date.day}/${date.month}');
+                        }
+                        return const Text('');
+                      },
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: true),
+                  ),
+                ),
+                minY: 0,
+                maxY: 100,
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: widget.data.scoruri.asMap().entries.map((e) {
+                      return FlSpot(e.key.toDouble(), e.value.value.toDouble());
+                    }).toList(),
+                    isCurved: true,
+                    barWidth: 3,
+                    color: Colors.blue,
+                    dotData: FlDotData(show: true),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 }

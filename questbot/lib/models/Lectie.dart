@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import '../utils/firebase_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../utils/main_layout.dart';
 
 class LectiePage extends StatefulWidget {
@@ -12,14 +17,17 @@ class LectiePage extends StatefulWidget {
   State<LectiePage> createState() => _LectiePageState();
 }
 
-class _LectiePageState extends State<LectiePage> {
+class _LectiePageState extends State<LectiePage> with WidgetsBindingObserver {
   Map<String, dynamic> lectii = {};
   Map<String, dynamic> teste = {};
-  String? selectedValue;
-  String rezultatText = '';
-  Color rezultatColor = Colors.black;
+
+  Map<int, String> selectedValues = {};
+  Map<int, bool> results = {};
+  bool testVerificat = false;
   int scor = 0;
-  Set<String> completedQuestions = {};
+
+  int _timeSpent = 0;
+  Timer? _timer;
 
   final List<Color> colorPalette = [
     Color(0xFFF78FB3),
@@ -34,15 +42,92 @@ class _LectiePageState extends State<LectiePage> {
     Color(0xFFC44569),
   ];
 
-  // Map: index întrebare -> valoarea selectată
-  Map<int, String> selectedValues = {};
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+    WidgetsBinding.instance.addObserver(this);
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {
+      _timeSpent++;
+    }));
+  }
 
-  // Map: index întrebare -> corectitudine (true/false)
-  Map<int, bool> results = {};
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
+    _saveTime();
+    super.dispose();
+  }
 
-  bool testVerificat = false;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _timer?.cancel();
+      _saveTime();
+    }
+  }
 
-  // Exemplu simplu de widget pentru subtitlu cu paragraf (poți adapta)
+  Future<void> _loadData() async {
+    String lectiiData = await rootBundle.loadString('assets/lectii.json');
+    String testeData = await rootBundle.loadString('assets/teste.json');
+    setState(() {
+      lectii = json.decode(lectiiData);
+      teste = json.decode(testeData);
+    });
+  }
+
+  Future<void> _saveTime() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('progress')
+        .doc(widget.chenarId);
+
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+      final current = snapshot.data()?['timeSpent'] ?? 0;
+      transaction.set(docRef, {
+        'timeSpent': current + _timeSpent,
+      }, SetOptions(merge: true));
+    });
+
+    _timeSpent = 0;
+  }
+
+  Future<void> _saveScore(int score, int total) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('progress')
+        .doc(widget.chenarId);
+
+    await docRef.set({
+      'score': score,
+      'totalQuestions': total,
+      'completed': true,
+      'scoruri': FieldValue.arrayUnion([
+        {
+          'timestamp': DateTime.now().toIso8601String(),
+          'value': score,
+        }
+      ])
+    }, SetOptions(merge: true));
+    
+    await saveTestToHistory(
+      materie: lectii[widget.chenarId]?['materie'] ?? 'Necunoscut',
+      capitol: lectii[widget.chenarId]?['titlul'] ?? widget.chenarId,
+      timp: _timeSpent,
+      scor: score,
+    );
+  }
+
   Widget buildSubtitluCuParagraf(String subtitlu, List<String> paragrafe, Color culoare) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -66,59 +151,6 @@ class _LectiePageState extends State<LectiePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    String lectiiData = await rootBundle.loadString('assets/lectii.json');
-    String testeData = await rootBundle.loadString('assets/teste.json');
-
-    setState(() {
-      lectii = json.decode(lectiiData);
-      teste = json.decode(testeData);
-    });
-  }
-
-  void verificaRaspuns() {
-    final testData = teste[widget.chenarId];
-    if (testData == null) {
-      setState(() {
-        rezultatText = "⚠️ Nu există întrebare pentru această lecție.";
-        rezultatColor = Colors.orange;
-      });
-      return;
-    }
-
-    final raspunsCorect = testData["raspuns_corect"];
-    if (raspunsCorect == null) {
-      setState(() {
-        rezultatText = "⚠️ Nu este definit un răspuns corect.";
-        rezultatColor = Colors.orange;
-      });
-      return;
-    }
-
-    if (selectedValue == raspunsCorect) {
-      if (!completedQuestions.contains(widget.chenarId)) {
-        scor++;
-        completedQuestions.add(widget.chenarId);
-        rezultatText = "✅ Răspuns corect!";
-        rezultatColor = Colors.green;
-      } else {
-        rezultatText = "✔️ Ai răspuns deja corect.";
-        rezultatColor = Colors.blue;
-      }
-    } else {
-      rezultatText = "❌ Răspuns greșit.";
-      rezultatColor = Colors.red;
-    }
-
-    setState(() {});
-  }
-
-  @override
   Widget build(BuildContext context) {
     final lectieData = lectii[widget.chenarId];
     final testData = teste[widget.chenarId];
@@ -126,14 +158,16 @@ class _LectiePageState extends State<LectiePage> {
     if (lectieData == null) {
       return Scaffold(
         body: Center(
-            child: Text('⚠️ Lecția nu a fost găsită.',
-                style: TextStyle(color: Colors.red, fontSize: 20))),
+          child: Text(
+            '⚠️ Lecția nu a fost găsită.',
+            style: const TextStyle(color: Colors.red, fontSize: 20),
+          ),
+        ),
       );
     }
 
     List<Widget> continutControls = [];
 
-// Titlu cu fundal verde
     continutControls.add(
       Container(
         width: double.infinity,
@@ -145,39 +179,31 @@ class _LectiePageState extends State<LectiePage> {
         ),
         child: Text(
           lectieData['titlul'] ?? '',
-          style: const TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           textAlign: TextAlign.center,
         ),
       ),
     );
 
-
-    // Conținut
     for (var item in lectieData['continut'] ?? []) {
-      // DEFINITIE
       for (var definitie in item['definitie'] ?? []) {
         Color culoare = colorPalette[Random().nextInt(colorPalette.length)];
         String subtitlu = definitie['subtitlu'] ?? '';
         List<String> paragrafe = List<String>.from(definitie['paragraf'] ?? []);
         if (subtitlu.isNotEmpty && paragrafe.isNotEmpty) {
-          continutControls.add(
-              buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
+          continutControls.add(buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
         }
       }
 
-      // TEORIE
       for (var teorie in item['teorie'] ?? []) {
         Color culoare = colorPalette[Random().nextInt(colorPalette.length)];
         String subtitlu = teorie['subtitlu'] ?? '';
         List<String> paragrafe = List<String>.from(teorie['paragraf'] ?? []);
         if (subtitlu.isNotEmpty && paragrafe.isNotEmpty) {
-          continutControls.add(
-              buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
+          continutControls.add(buildSubtitluCuParagraf(subtitlu, paragrafe, culoare));
         }
       }
 
-      // TABEL (opțional)
       var tabel = item['tabel'];
       if (tabel != null) {
         continutControls.add(
@@ -190,8 +216,10 @@ class _LectiePageState extends State<LectiePage> {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.blueGrey, width: 1),
             ),
-            child: Text("Tabel: $tabel", style: TextStyle(
-                fontSize: 16, fontStyle: FontStyle.italic, color: Colors.blue)),
+            child: Text(
+              "Tabel: $tabel",
+              style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.blue),
+            ),
           ),
         );
       }
@@ -204,9 +232,10 @@ class _LectiePageState extends State<LectiePage> {
 
       testControls.addAll([
         const Divider(height: 30),
-        Text("Test interactiv:",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue)),
+        const Text(
+          "Test interactiv:",
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
+        ),
       ]);
 
       for (int i = 0; i < intrebari.length; i++) {
@@ -246,8 +275,6 @@ class _LectiePageState extends State<LectiePage> {
                     },
                   );
                 }),
-
-                // Feedback după verificare
                 if (testVerificat && results.containsKey(i))
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
@@ -264,6 +291,7 @@ class _LectiePageState extends State<LectiePage> {
           ),
         );
       }
+
       testControls.add(
         ElevatedButton(
           onPressed: () {
@@ -293,19 +321,20 @@ class _LectiePageState extends State<LectiePage> {
               scor = tempScor;
               testVerificat = true;
             });
+
+            _saveScore(tempScor, intrebari.length);
           },
           child: const Text("Rezolvă testul"),
         ),
       );
 
-      // Afișare scor total
       if (testVerificat) {
         testControls.add(
           Padding(
             padding: const EdgeInsets.only(top: 16),
             child: Text(
               "Scor total: $scor / ${intrebari.length}",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
         );
@@ -315,8 +344,8 @@ class _LectiePageState extends State<LectiePage> {
     return MainLayout(
       selectedIndex: 0,
       child: Container(
-        color: Colors.white,  // fundal alb pentru tot conținutul
-        child: SingleChildScrollView(   // ca să poți da scroll dacă e conținut mai mult
+        color: Colors.white,
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

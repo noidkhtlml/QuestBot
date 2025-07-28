@@ -9,6 +9,7 @@ import 'package:questbot/pages/login_page.dart';
 import 'package:questbot/pages/neurostiinte.dart';
 import 'package:questbot/pages/signup_page.dart';
 import 'package:questbot/pages/statistici.dart';
+import 'package:questbot/pages/parinte_ui.dart';
 import 'firebase_options.dart';
 import 'pages/home_page.dart';
 
@@ -44,6 +45,7 @@ class QuestBotApp extends StatelessWidget {
         '/astro': (context) => const AstronomiePage(),
         '/neuro': (context) => const NeurostiintaPage(),
         '/statistici': (context) => StatisticiPage(),
+        '/parinti': (context) => const ParinteUiPage(),
       },
     );
   }

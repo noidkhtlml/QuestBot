@@ -36,6 +36,7 @@ dependencies:
 # pentru baza de date:
   firebase_core: ^3.6.0
   firebase_auth: ^5.6.2
+  cloud_firestore: ^5.6.12
 
 # pentru ai:
   http: ^1.4.0

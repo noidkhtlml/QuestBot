@@ -1,5 +1,3 @@
-// lib/utils/firebase_options.dart
-
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform, kIsWeb;
@@ -50,5 +48,5 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.yourApp',
   );
 
-  static const FirebaseOptions macos = ios; // dacă folosești macOS, poți reutiliza
+  static const FirebaseOptions macos = ios;
 }
