@@ -14,9 +14,8 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String _userType = 'Elev'; // default
+  String _userType = 'Elev';
   String _familyCode = '';
-
   bool get isParent => _userType == 'Părinte';
   bool get isStudent => _userType == 'Elev';
 
@@ -37,12 +36,18 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-
+    // Dacă elevul nu a introdus codul familiei, îi generăm unul automat
     if (isStudent && _familyCode.isEmpty) {
       _familyCode = DateTime.now().millisecondsSinceEpoch.toString().substring(5, 11);
     }
 
+    // Pentru părinți, codul familiei este obligatoriu și validat
     if (isParent) {
+      if (_familyCode.isEmpty) {
+        _showError('Trebuie să introduci codul familiei.');
+        return;
+      }
+
       final copii = await LocalDatabase.instance.getEleviForParinte(_familyCode);
       if (copii.isEmpty) {
         _showError('Codul introdus nu este asociat cu niciun elev.');
@@ -98,18 +103,30 @@ class _SignupPageState extends State<SignupPage> {
           children: [
             TextField(
               controller: _userIdController,
-              decoration: const InputDecoration(labelText: 'Nume utilizator'),
+              decoration: const InputDecoration(
+                labelText: 'Nume utilizator',
+                filled: true,
+                fillColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                filled: true,
+                fillColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Parolă'),
+              decoration: const InputDecoration(
+                labelText: 'Parolă',
+                filled: true,
+                fillColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
@@ -123,14 +140,20 @@ class _SignupPageState extends State<SignupPage> {
                   _userType = value ?? 'Elev';
                 });
               },
-              decoration: const InputDecoration(labelText: 'Tip utilizator'),
+              decoration: const InputDecoration(
+                labelText: 'Tip utilizator',
+                filled: true,
+                fillColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
-            if (isParent)
+            if (isParent || isStudent)
               TextField(
                 onChanged: (value) => _familyCode = value,
-                decoration: const InputDecoration(
-                  labelText: 'Cod familie (de la copil)',
+                decoration: InputDecoration(
+                  labelText: isParent ? 'Cod familie al copilului' : 'Cod familie(poți alege tu)',
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
               ),
             const SizedBox(height: 20),
@@ -141,6 +164,7 @@ class _SignupPageState extends State<SignupPage> {
           ],
         ),
       ),
+      backgroundColor: Colors.grey[200], // optional, pentru contrast mai bun
     );
   }
 }
