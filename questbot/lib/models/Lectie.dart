@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import '../utils/firebase_helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../database.dart';
 import '../utils/main_layout.dart';
 
 class LectiePage extends StatefulWidget {
@@ -42,14 +41,21 @@ class _LectiePageState extends State<LectiePage> with WidgetsBindingObserver {
     Color(0xFFC44569),
   ];
 
+  String? _userId;
+
   @override
   void initState() {
     super.initState();
     _loadData();
     WidgetsBinding.instance.addObserver(this);
+    _initUserId();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {
       _timeSpent++;
     }));
+  }
+
+  Future<void> _initUserId() async {
+    _userId = 'user';
   }
 
   @override
@@ -78,54 +84,71 @@ class _LectiePageState extends State<LectiePage> with WidgetsBindingObserver {
   }
 
   Future<void> _saveTime() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
+    if (_userId == null) return;
 
-    final docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('progress')
-        .doc(widget.chenarId);
+    final existingProgress = await LocalDatabase.instance.getProgress(_userId!, widget.chenarId);
 
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      final snapshot = await transaction.get(docRef);
-      final current = snapshot.data()?['timeSpent'] ?? 0;
-      transaction.set(docRef, {
-        'timeSpent': current + _timeSpent,
-      }, SetOptions(merge: true));
-    });
+    if (existingProgress == null) {
+      await LocalDatabase.instance.insertProgress({
+        'userId': _userId,
+        'chenarId': widget.chenarId,
+        'timeSpent': _timeSpent,
+        'score': 0,
+        'totalQuestions': 0,
+        'completed': 0,
+        'scoruri': '[]',
+      });
+    } else {
+      int currentTimeSpent = existingProgress['timeSpent'] ?? 0;
+      await LocalDatabase.instance.updateProgress(
+        existingProgress['id'],
+        {'timeSpent': currentTimeSpent + _timeSpent},
+      );
+    }
 
     _timeSpent = 0;
   }
 
   Future<void> _saveScore(int score, int total) async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
+    if (_userId == null) return;
 
-    final docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('progress')
-        .doc(widget.chenarId);
+    final existingProgress = await LocalDatabase.instance.getProgress(_userId!, widget.chenarId);
 
-    await docRef.set({
-      'score': score,
-      'totalQuestions': total,
-      'completed': true,
-      'scoruri': FieldValue.arrayUnion([
+    List<dynamic> scoruriList = [];
+    if (existingProgress != null) {
+      try {
+        scoruriList = json.decode(existingProgress['scoruri'] ?? '[]');
+      } catch (_) {}
+    }
+
+    scoruriList.add({
+      'timestamp': DateTime.now().toIso8601String(),
+      'value': score,
+    });
+
+    final scoruriJson = json.encode(scoruriList);
+
+    if (existingProgress == null) {
+      await LocalDatabase.instance.insertProgress({
+        'userId': _userId,
+        'chenarId': widget.chenarId,
+        'timeSpent': _timeSpent,
+        'score': score,
+        'totalQuestions': total,
+        'completed': 1,
+        'scoruri': scoruriJson,
+      });
+    } else {
+      await LocalDatabase.instance.updateProgress(
+        existingProgress['id'],
         {
-          'timestamp': DateTime.now().toIso8601String(),
-          'value': score,
-        }
-      ])
-    }, SetOptions(merge: true));
-    
-    await saveTestToHistory(
-      materie: lectii[widget.chenarId]?['materie'] ?? 'Necunoscut',
-      capitol: lectii[widget.chenarId]?['titlul'] ?? widget.chenarId,
-      timp: _timeSpent,
-      scor: score,
-    );
+          'score': score,
+          'totalQuestions': total,
+          'completed': 1,
+          'scoruri': scoruriJson,
+        },
+      );
+    }
   }
 
   Widget buildSubtitluCuParagraf(String subtitlu, List<String> paragrafe, Color culoare) {
@@ -139,12 +162,15 @@ class _LectiePageState extends State<LectiePage> with WidgetsBindingObserver {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(subtitlu, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: culoare)),
+          Text(subtitlu,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: culoare)),
           const SizedBox(height: 8),
-          ...paragrafe.map((p) => Padding(
+          ...paragrafe
+              .map((p) => Padding(
             padding: const EdgeInsets.only(bottom: 6),
             child: Text(p, style: const TextStyle(fontSize: 16)),
-          )),
+          ))
+              .toList(),
         ],
       ),
     );
@@ -159,7 +185,7 @@ class _LectiePageState extends State<LectiePage> with WidgetsBindingObserver {
       return Scaffold(
         body: Center(
           child: Text(
-            '⚠️ Lecția nu a fost găsită.',
+            'Lecția se încarcă...',
             style: const TextStyle(color: Colors.red, fontSize: 20),
           ),
         ),

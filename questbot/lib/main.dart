@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:questbot/pages/ai.dart';
 import 'package:questbot/pages/astronomie.dart';
 import 'package:questbot/pages/chatbot.dart';
@@ -10,15 +10,11 @@ import 'package:questbot/pages/neurostiinte.dart';
 import 'package:questbot/pages/signup_page.dart';
 import 'package:questbot/pages/statistici.dart';
 import 'package:questbot/pages/parinte_ui.dart';
-import 'firebase_options.dart';
 import 'pages/home_page.dart';
 
-
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
   runApp(const QuestBotApp());
 }
 
@@ -37,8 +33,8 @@ class QuestBotApp extends StatelessWidget {
       routes: {
         '/screen': (context) => const HomeScreen(),
         '/home': (context) => const HomePage(),
-        '/login': (context) => const LoginPage(),
-        '/signup': (context) => const SignupPage(),
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => SignupPage(),
         '/chatbot': (context) => ChatPage(),
         '/ai': (context) => const AiPage(),
         '/electronica': (context) => const ElectronicaPage(),

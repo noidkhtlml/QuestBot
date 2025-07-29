@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import '../database.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -25,147 +25,118 @@ class _SignupPageState extends State<SignupPage> {
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
 
-    try {
-      // Creează contul în Firebase Auth
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      final user = FirebaseAuth.instance.currentUser;
-      final uid = user?.uid;
-
-      // Generează cod familie dacă e elev și nu a introdus unul
-      if (isStudent && _familyCode.isEmpty) {
-        _familyCode = uid!.substring(0, 6); // simplu, din UID
-      }
-
-      // Salvează în Firestore
-      if (uid != null) {
-        await FirebaseFirestore.instance.collection('users').doc(uid).set({
-          'username': userId,
-          'email': email,
-          'userType': _userType,
-          'familyCode': _familyCode,
-        });
-      }
-
-      // Navighează mai departe
-      if (isParent) {
-        Navigator.pushReplacementNamed(context, '/parinte');
-      } else {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
-    } on FirebaseAuthException catch (e) {
-      String message = 'A apărut o eroare.';
-      if (e.code == 'email-already-in-use') {
-        message = 'Există deja un cont cu acest email.';
-      } else if (e.code == 'weak-password') {
-        message = 'Parola este prea slabă. Alege una mai puternică.';
-      }
-
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Eroare'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+    if (userId.isEmpty || email.isEmpty || password.isEmpty) {
+      _showError('Completează toate câmpurile.');
+      return;
     }
+
+    // Verificare email duplicat
+    final existing = await LocalDatabase.instance.getUserByEmail(email);
+    if (existing != null) {
+      _showError('Există deja un cont cu acest email.');
+      return;
+    }
+
+
+    if (isStudent && _familyCode.isEmpty) {
+      _familyCode = DateTime.now().millisecondsSinceEpoch.toString().substring(5, 11);
+    }
+
+    if (isParent) {
+      final copii = await LocalDatabase.instance.getEleviForParinte(_familyCode);
+      if (copii.isEmpty) {
+        _showError('Codul introdus nu este asociat cu niciun elev.');
+        return;
+      }
+    }
+
+    await LocalDatabase.instance.createUser({
+      'username': userId,
+      'email': email,
+      'password': password,
+      'userType': _userType,
+      'familyCode': _familyCode,
+    });
+
+    if (!mounted) return;
+
+    if (isParent) {
+      Navigator.pushReplacementNamed(context, '/parinti');
+    } else {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+
+  void _showError(String msg) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Eroare'),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Înregistrare"),
+        title: const Text("Creare cont"),
         backgroundColor: Colors.pinkAccent,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(30),
         child: Column(
           children: [
             TextField(
               controller: _userIdController,
-              decoration: const InputDecoration(
-                labelText: 'Nume de utilizator',
-                filled: true,
-                fillColor: Colors.white,
-              ),
+              decoration: const InputDecoration(labelText: 'Nume utilizator'),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                filled: true,
-                fillColor: Colors.white,
-              ),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Parolă',
-                filled: true,
-                fillColor: Colors.white,
-              ),
+              decoration: const InputDecoration(labelText: 'Parolă'),
             ),
             const SizedBox(height: 16),
-
-            // Dropdown pentru tip utilizator
             DropdownButtonFormField<String>(
               value: _userType,
-              decoration: const InputDecoration(
-                labelText: 'Tip utilizator',
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              items: ['Elev', 'Părinte'].map((type) {
-                return DropdownMenuItem<String>(
-                  value: type,
-                  child: Text(type),
-                );
-              }).toList(),
+              items: const [
+                DropdownMenuItem(value: 'Elev', child: Text('Elev')),
+                DropdownMenuItem(value: 'Părinte', child: Text('Părinte')),
+              ],
               onChanged: (value) {
                 setState(() {
-                  _userType = value!;
+                  _userType = value ?? 'Elev';
                 });
               },
+              decoration: const InputDecoration(labelText: 'Tip utilizator'),
             ),
-
             const SizedBox(height: 16),
-
-            // Câmp cod familie
-            if (isStudent || isParent)
+            if (isParent)
               TextField(
-                onChanged: (value) => _familyCode = value.trim(),
-                decoration: InputDecoration(
-                  labelText: isStudent
-                      ? 'Cod familie (va fi folosit de părinte)'
-                      : 'Introdu codul elevului',
-                  filled: true,
-                  fillColor: Colors.white,
+                onChanged: (value) => _familyCode = value,
+                decoration: const InputDecoration(
+                  labelText: 'Cod familie (de la copil)',
                 ),
               ),
-
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _signUp,
               child: const Text('Înregistrare'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Înapoi"),
             ),
           ],
         ),

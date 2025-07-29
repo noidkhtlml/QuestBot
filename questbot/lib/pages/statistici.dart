@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:http/http.dart' as http;
-
 import '../utils/main_layout.dart';
+import '../database.dart';
 
 class StatisticiPage extends StatefulWidget {
   const StatisticiPage({super.key});
@@ -27,51 +25,44 @@ class _StatisticiPageState extends State<StatisticiPage> {
   List<_TestData> testData = [];
   List<_CapitolStats> capitolStats = [];
 
-  final String projectId = 'questbot-database';
-  final String collection = 'statistici';
-  final String document = 'user_id_exemplu';
-
   @override
   void initState() {
     super.initState();
-    _fetchStats();
+    _fetchStatsFromDb();
   }
 
-  Future<void> _fetchStats() async {
-    final url =
-        'https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents/$collection/$document';
+  Future<void> _fetchStatsFromDb() async {
+    final db = LocalDatabase.instance;
+    final progressList = await (await db.database).query('progress');
 
-    final response = await http.get(Uri.parse(url));
+    Map<String, int> timpPerMaterie = {};
+    Map<String, int> scorPerCapitol = {};
+    List<_CapitolStats> capitolList = [];
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final fields = data['fields'];
+    for (final row in progressList) {
+      final materie = row['userId']?.toString() ?? 'Necunoscut'; // aici ar trebui să mapăm userId la materie dacă ai o tabelă materii
+      final capitol = row['chenarId']?.toString() ?? 'Necunoscut';
+      final timp = row['timeSpent'] is int ? row['timeSpent'] as int : 0;
+      final scor = row['score'] is int ? row['score'] as int : 0;
 
-      // Exemplu: {"neuro": {timp: 30, scor: 80}, "ai": {...}}
-      final Map<String, dynamic> statistici = fields.map((k, v) => MapEntry(k, v['mapValue']['fields']));
-
-      List<_TimpData> timpList = [];
-      List<_TestData> testList = [];
-      List<_CapitolStats> capitolList = [];
-
-      statistici.forEach((materie, detalii) {
-        final timp = int.parse(detalii['timp']['integerValue']);
-        final scor = int.parse(detalii['scor']['integerValue']);
-        final capitol = detalii['capitol']['stringValue'];
-
-        timpList.add(_TimpData(materie, timp));
-        testList.add(_TestData(capitol, scor));
-        capitolList.add(_CapitolStats(materie, capitol, timp, scor));
-      });
-
-      setState(() {
-        timpData = timpList;
-        testData = testList;
-        capitolStats = capitolList;
-      });
-    } else {
-      debugPrint("Eroare la fetch: ${response.body}");
+      timpPerMaterie[materie] = (timpPerMaterie[materie] ?? 0) + timp;
+      scorPerCapitol[capitol] = scor;
+      capitolList.add(_CapitolStats(materie, capitol, timp, scor));
     }
+
+    final timpList = timpPerMaterie.entries
+        .map((e) => _TimpData(e.key, e.value))
+        .toList();
+
+    final testList = scorPerCapitol.entries
+        .map((e) => _TestData(e.key, e.value))
+        .toList();
+
+    setState(() {
+      timpData = timpList;
+      testData = testList;
+      capitolStats = capitolList;
+    });
   }
 
   @override

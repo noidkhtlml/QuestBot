@@ -1,9 +1,22 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:http/http.dart' as http;
+import '../database.dart';
 
-import '../utils/main_layout.dart';
+class LocalCapitolStats {
+  final String materie;
+  final String capitol;
+  final int timp;
+  final int scor;
+  final List<ScoreEntry> scoruri;
+  final String elev;
+  LocalCapitolStats(this.materie, this.capitol, this.timp, this.scor, this.scoruri, this.elev);
+}
+
+class ScoreEntry {
+  final DateTime timestamp;
+  final int value;
+  ScoreEntry(this.timestamp, this.value);
+}
 
 class ParinteUiPage extends StatefulWidget {
   const ParinteUiPage({super.key});
@@ -13,8 +26,8 @@ class ParinteUiPage extends StatefulWidget {
 }
 
 class _ParinteUiPageState extends State<ParinteUiPage> {
-  final borderColor = const Color(0xFFADCFFF);
-  final headerColor = const Color(0xFFFF98A2);
+  List<LocalCapitolStats> capitolStats = [];
+
   final List<Color> chartColors = [
     Colors.redAccent,
     Colors.blueAccent,
@@ -22,257 +35,96 @@ class _ParinteUiPageState extends State<ParinteUiPage> {
     Colors.orangeAccent,
   ];
 
-  List<_TimpData> timpData = [];
-  List<_TestData> testData = [];
-  List<_CapitolStats> capitolStats = [];
-
-  final String projectId = 'questbot-database';
-  final String collection = 'statistici';
-  final String document = 'user_id_exemplu';
-
   @override
   void initState() {
     super.initState();
-    _fetchStats();
+    _fetchStatsFromDb();
   }
 
-  Future<void> _fetchStats() async {
-    final url =
-        'https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents/$collection/$document';
+  Future<void> _fetchStatsFromDb() async {
+    final db = LocalDatabase.instance;
+    final progressList = await (await db.database).query('progress');
 
-    final response = await http.get(Uri.parse(url));
+    Map<String, List<Map<String, dynamic>>> statsGrouped = {};
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final fields = data['fields'];
+    for (final row in progressList) {
+      final elev = row['userId']?.toString() ?? 'Elev Anonim';
+      final materie = row['materie']?.toString() ?? elev;
+      final capitol = row['chenarId']?.toString() ?? 'Necunoscut';
+      final timp = row['timeSpent'] is int ? row['timeSpent'] as int : 0;
+      final scor = row['score'] is int ? row['score'] as int : 0;
+      final timestampStr = row['timestamp']?.toString() ?? DateTime.now().toIso8601String();
 
-      final Map<String, dynamic> statistici =
-      fields.map((k, v) => MapEntry(k, v['mapValue']['fields']));
-
-      List<_TimpData> timpList = [];
-      List<_TestData> testList = [];
-      List<_CapitolStats> capitolList = [];
-
-      statistici.forEach((materie, detalii) {
-        final timp = int.parse(detalii['timp']['integerValue']);
-        final scor = int.parse(detalii['scor']['integerValue']);
-        final capitol = detalii['capitol']['stringValue'];
-
-        final scoruriList =
-            (detalii['scoruri']?['arrayValue']?['values'] as List?) ?? [];
-
-        List<_ScoreEntry> scoruri = scoruriList.map((entry) {
-          final map = entry['mapValue']['fields'];
-          final dateStr = map['timestamp']['stringValue'];
-          final score = int.parse(map['value']['integerValue']);
-          return _ScoreEntry(DateTime.parse(dateStr), score);
-        }).toList();
-
-        timpList.add(_TimpData(materie, timp));
-        testList.add(_TestData(capitol, scor));
-        capitolList.add(_CapitolStats(materie, capitol, timp, scor, scoruri));
+      final key = '$elev|$materie|$capitol';
+      statsGrouped.putIfAbsent(key, () => []);
+      statsGrouped[key]!.add({
+        'timp': timp,
+        'scor': scor,
+        'timestamp': timestampStr,
+        'elev': elev,
+        'materie': materie,
+        'capitol': capitol,
       });
-
-      setState(() {
-        timpData = timpList;
-        testData = testList;
-        capitolStats = capitolList;
-      });
-    } else {
-      debugPrint("Eroare la fetch: ${response.body}");
     }
+
+    List<LocalCapitolStats> stats = [];
+    statsGrouped.forEach((key, entries) {
+      final elev = entries.first['elev'] as String;
+      final materie = entries.first['materie'] as String;
+      final capitol = entries.first['capitol'] as String;
+
+      final totalTimp = entries.fold<int>(0, (sum, e) => sum + (e['timp'] as int));
+      final maxScor = entries.fold<int>(0, (max, e) => e['scor'] > max ? e['scor'] as int : max);
+
+      final scoruri = entries.map((e) {
+        DateTime ts;
+        try {
+          ts = DateTime.parse(e['timestamp']);
+        } catch (_) {
+          ts = DateTime.now();
+        }
+        return ScoreEntry(ts, e['scor'] as int);
+      }).toList();
+      scoruri.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      stats.add(LocalCapitolStats(materie, capitol, totalTimp, maxScor, scoruri, elev));
+    });
+
+    setState(() {
+      capitolStats = stats;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      selectedIndex: 2,
+    return Scaffold(
       backgroundColor: Colors.white,
-      child: Column(
+      body: Column(
         children: [
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
-            color: headerColor,
+            color: Colors.white,
             child: const Text(
-              "Statistici",
+              "Statistici Elevi",
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: _buildPieChartStyled()),
-                      const SizedBox(width: 10),
-                      Expanded(child: _buildBarChartStyled()),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _buildChapterStatsStyled(),
-                ],
-              ),
+            child: ListView.builder(
+              itemCount: capitolStats.length,
+              itemBuilder: (context, index) {
+                return ExpandableTileWithGraph(data: capitolStats[index]);
+              },
             ),
-          ),
+          )
         ],
       ),
     );
   }
-
-  Widget _buildPieChartStyled() {
-    final total = timpData.fold(0, (sum, item) => sum + item.timp);
-    return Container(
-      height: 220,
-      padding: const EdgeInsets.all(12),
-      decoration: _roundedBoxDecoration(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Timp pe Materie', style: TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          Expanded(
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 2,
-                centerSpaceRadius: 30,
-                sections: timpData.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final data = entry.value;
-                  final percentage = total > 0 ? (data.timp / total * 100).toStringAsFixed(0) : '0';
-                  return PieChartSectionData(
-                    value: data.timp.toDouble(),
-                    color: chartColors[index % chartColors.length],
-                    title: '$percentage%',
-                    radius: 50,
-                    titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBarChartStyled() {
-    return Container(
-      height: 220,
-      padding: const EdgeInsets.all(12),
-      decoration: _roundedBoxDecoration(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Scor pe Capitole', style: TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          Expanded(
-            child: BarChart(
-              BarChartData(
-                maxY: 100,
-                borderData: FlBorderData(show: false),
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: true, reservedSize: 28),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        final index = value.toInt();
-                        if (index >= 0 && index < testData.length) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              testData[index].capitol,
-                              style: const TextStyle(fontSize: 10),
-                            ),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                  ),
-                ),
-                barGroups: testData.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final data = entry.value;
-                  return BarChartGroupData(
-                    x: index,
-                    barRods: [
-                      BarChartRodData(
-                        toY: data.scor.toDouble(),
-                        color: Colors.cyanAccent,
-                        width: 20,
-                        borderRadius: BorderRadius.circular(6),
-                      )
-                    ],
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChapterStatsStyled() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: _roundedBoxDecoration(),
-      child: ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: capitolStats.length,
-        separatorBuilder: (_, __) => const Divider(),
-        itemBuilder: (context, index) {
-          return ExpandableTileWithGraph(data: capitolStats[index]);
-        },
-      ),
-    );
-  }
-
-  BoxDecoration _roundedBoxDecoration() {
-    return BoxDecoration(
-      color: Colors.white,
-      border: Border.all(color: borderColor, width: 3),
-      borderRadius: BorderRadius.circular(24),
-    );
-  }
-}
-
-class _TimpData {
-  final String materie;
-  final int timp;
-  _TimpData(this.materie, this.timp);
-}
-
-class _TestData {
-  final String capitol;
-  final int scor;
-  _TestData(this.capitol, this.scor);
-}
-
-class _CapitolStats {
-  final String materie;
-  final String capitol;
-  final int timp;
-  final int scor;
-  final List<_ScoreEntry> scoruri;
-  _CapitolStats(this.materie, this.capitol, this.timp, this.scor, this.scoruri);
-}
-
-class _ScoreEntry {
-  final DateTime timestamp;
-  final int value;
-  _ScoreEntry(this.timestamp, this.value);
 }
 
 class ExpandableTileWithGraph extends StatefulWidget {
-  final _CapitolStats data;
+  final LocalCapitolStats data;
   const ExpandableTileWithGraph({required this.data, super.key});
 
   @override
@@ -287,52 +139,53 @@ class _ExpandableTileWithGraphState extends State<ExpandableTileWithGraph> {
     return Column(
       children: [
         ListTile(
-          leading: const Icon(Icons.bar_chart, color: Colors.pinkAccent),
-          title: Text('${widget.data.materie} - ${widget.data.capitol}'),
-          subtitle: Text('Timp: ${widget.data.timp} min, Scor: ${widget.data.scor}%'),
+          title: Text('${widget.data.elev} - ${widget.data.materie}'),
+          subtitle: Text('${widget.data.capitol}: ${widget.data.timp} min, ${widget.data.scor}%'),
           trailing: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
           onTap: () => setState(() => _expanded = !_expanded),
         ),
         if (_expanded && widget.data.scoruri.isNotEmpty)
-          Container(
+          SizedBox(
             height: 200,
-            padding: const EdgeInsets.all(12),
-            child: LineChart(
-              LineChartData(
-                titlesData: FlTitlesData(
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, _) {
-                        final index = value.toInt();
-                        if (index >= 0 && index < widget.data.scoruri.length) {
-                          final date = widget.data.scoruri[index].timestamp;
-                          return Text('${date.day}/${date.month}');
-                        }
-                        return const Text('');
-                      },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: LineChart(
+                LineChartData(
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, _) {
+                          final index = value.toInt();
+                          if (index >= 0 && index < widget.data.scoruri.length) {
+                            final date = widget.data.scoruri[index].timestamp;
+                            return Text('${date.day}/${date.month}');
+                          }
+                          return const Text('');
+                        },
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: true),
                     ),
                   ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: true),
-                  ),
+                  minY: 0,
+                  maxY: 100,
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: widget.data.scoruri.asMap().entries.map((e) {
+                        return FlSpot(e.key.toDouble(), e.value.value.toDouble());
+                      }).toList(),
+                      isCurved: true,
+                      barWidth: 3,
+                      color: Colors.blue,
+                      dotData: FlDotData(show: true),
+                    ),
+                  ],
                 ),
-                minY: 0,
-                maxY: 100,
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: widget.data.scoruri.asMap().entries.map((e) {
-                      return FlSpot(e.key.toDouble(), e.value.value.toDouble());
-                    }).toList(),
-                    isCurved: true,
-                    barWidth: 3,
-                    color: Colors.blue,
-                    dotData: FlDotData(show: true),
-                  ),
-                ],
               ),
             ),
-          ),
+          )
       ],
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import '../database.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,48 +13,53 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      final user = await LocalDatabase.instance.authenticateUser(email, password);
 
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
-    } on FirebaseAuthException catch (e) {
-      String message = 'A apărut o eroare.';
-      if (e.code == 'user-not-found') {
-        message = 'Utilizatorul nu a fost găsit.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Parolă incorectă.';
+      if (user == null) {
+        _showError('Email sau parolă incorectă.');
+        return;
       }
 
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Logare eșuată'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      final role = user['userType'];
+
+      if (!mounted) return;
+
+      if (role == 'Părinte') {
+        Navigator.pushReplacementNamed(context, '/parinti');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (e) {
+      _showError('A apărut o eroare: $e');
     }
   }
 
+  void _showError(String msg) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Logare eșuată'),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Logare"),
+      appBar: AppBar(
+        title: const Text("Logare"),
         backgroundColor: Colors.pinkAccent,
         foregroundColor: Colors.white,
         elevation: 0,
